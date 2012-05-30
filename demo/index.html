@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Laces.js Demo</title>
+    <script type="text/javascript" src="../laces.js"></script>
+    <script type="text/javascript" src="jquery.js"></script>
+    <style type="text/css">
+        .huge {
+            font-size: xx-large;
+        }
+    </style>
+</head>
+<body>
+    <p>
+        <a href="javascript:state.backgroundColor = 'green';">Green</a>
+        <a href="javascript:state.backgroundColor = 'red';">Red</a>
+        <a href="javascript:state.backgroundColor = 'yellow';">Yellow</a>
+    </p>
+    <p id="color-text">Click one of the links, mate!</p>
+    <p><button id="huge-toggle">I will make things huge for you...</button></p>
+
+    <script type="text/javascript">
+        var state = new LacesState();
+        state.defineProperty("backgroundColor", "red");
+        state.defineProperty("isRed", function() { return this.backgroundColor == "red"; });
+        state.defineProperty("colorText", function() { return this.isRed ? "It's red, dude!" :
+                                                              this.isHuge ? "Dunno, but it's huge!" : "Dunno..."; });
+        state.defineProperty("isHuge", false);
+
+        state.bind("backgroundColor", function(value) { document.body.style.backgroundColor = value; });
+        state.bind("colorText", function(value) { document.getElementById("color-text").innerText = value; });
+
+        state.bind("isHuge", function(value) { $("body").toggleClass("huge", value); });
+
+        $("#huge-toggle").click(function() { state.isHuge = !state.isHuge; });
+    </script>
+</body>
+</html>
