@@ -8,6 +8,10 @@
         .huge {
             font-size: xx-large;
         }
+        
+        input {
+            background-color: white;
+        }
     </style>
 </head>
 <body>
@@ -18,21 +22,47 @@
     </p>
     <p id="color-text">Click one of the links, mate!</p>
     <p><button id="huge-toggle">I will make things huge for you...</button></p>
+    <p>
+        <button id="create-user">Create User</button>
+        <button id="delete-user">Delete User</button>
+        <input type="text" id="user-name" value="">
+        <button id="update-name">Update Name</button>
+    </p>
+    <p>Display name: <span id="display-name"></span></p>
 
     <script type="text/javascript">
         var state = new LacesState();
+
+        // colors
         state.defineProperty("backgroundColor", "red");
         state.defineProperty("isRed", function() { return this.backgroundColor == "red"; });
-        state.defineProperty("colorText", function() { return this.isRed ? "It's red, dude!" :
-                                                              this.isHuge ? "Dunno, but it's huge!" : "Dunno..."; });
-        state.defineProperty("isHuge", false);
+        state.defineProperty("colorText", function() {
+            return this.isRed ? "It's red, dude!" :
+                   this.isHuge ? "Dunno, but it's huge!" : "Dunno...";
+        });
+        state.bind("backgroundColor", function(value) {
+            $("body").css("backgroundColor", value);
+        });
+        state.bind("colorText", function(value) { $("#color-text").text(value); });
 
-        state.bind("backgroundColor", function(value) { document.body.style.backgroundColor = value; });
-        state.bind("colorText", function(value) { document.getElementById("color-text").innerText = value; });
-
-        state.bind("isHuge", function(value) { $("body").toggleClass("huge", value); });
+        // huge?
+        state.defineProperty("isHuge", false).bind(function(value) {
+            $("body").toggleClass("huge", value);
+        });
 
         $("#huge-toggle").click(function() { state.isHuge = !state.isHuge; });
+
+        // user name
+        state.defineProperty("user", null).bind(function(value) {
+            $("#user-name,#update-name").attr("disabled", value === null);
+        });
+        state.defineProperty("displayName", function() {
+            return this.user && this.user.name || "Anonymous";
+        }).bind(function(value) { $("#display-name").text(value); });
+
+        $("#create-user").click(function() { state.user = { "name": "Joe" }; });
+        $("#delete-user").click(function() { state.user = null; });
+        $("#update-name").click(function() { state.user.name = $("#user-name").val(); });
     </script>
 </body>
 </html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Laces.js Test Suite</title>
+    <script type="text/javascript" src="laces.js"></script>
+    <style type="text/css">
+        body {
+            background-color: green;
+        }
+
+        .feedback {
+            font-size: large;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body onload="main()">
+    <p id="success-feedback" class="feedback">All tests passed.</p>
+
+    <script type="text/javascript">
+
+        var state, newValue, oldValue;
+
+        function fail() {
+
+            var successFeedback = document.getElementById("success-feedback");
+            if (successFeedback) {
+                successFeedback.parentNode.removeChild(successFeedback);
+                document.body.style.backgroundColor = "red";
+            }
+        }
+
+        function assert(statement) {
+
+            eval("var result = !!(" + statement + ");");
+            if (!result) {
+                var errorFeedback = document.createElement("p");
+                errorFeedback.className = "feedback";
+                errorFeedback.innerText = "Assertion failed: " + statement;
+                document.body.appendChild(errorFeedback);
+                fail();
+            }
+        }
+
+        function testProperties() {
+
+            state = new LacesState();
+
+            state.defineProperty("firstName", "Arend");
+            state.defineProperty("lastName", "van Beelen");
+
+            assert('state.firstName === "Arend"');
+
+            state.defineProperty("fullName", function() { return this.firstName + " " + this.lastName; });
+
+            assert('state.fullName === "Arend van Beelen"');
+
+            state.firstName = "Arie";
+
+            assert('state.fullName === "Arie van Beelen"');
+        }
+
+        function testNestedProperties() {
+
+            state = new LacesState();
+
+            state.defineProperty("user", null);
+            state.defineProperty("displayName", function() { return this.user && this.user.name || "Anonymous"; });
+
+            state.user = { name: "Arend" };
+
+            assert('state.displayName === "Arend"');
+
+            state.user.name = "Arie";
+
+            assert('state.displayName === "Arie"');
+
+            state.user = null;
+
+            assert('state.displayName === "Anonymous"');
+        }
+
+        function testNestedProperties2() {
+
+            state = new LacesState();
+
+            state.defineProperty("user", { name: "Arend" });
+            state.defineProperty("displayName", function() { return this.user.name || "Anonymous"; });
+
+            assert('state.displayName === "Arend"');
+
+            state.user.name = "Arie";
+
+            assert('state.displayName === "Arie"');
+
+            state.user = { name: "Arend" };
+
+            assert('state.displayName === "Arend"');
+        }
+
+        function testNestedProperties3() {
+
+            state = new LacesState();
+
+            state.defineProperty("user", null);
+            state.defineProperty("displayAddress", function() { return this.user && this.user.address &&
+                                                                (this.user.address.street + " " + this.user.address.number + ", " + this.user.address.city) ||
+                                                                "No address given"; });
+
+            assert('state.displayAddress === "No address given"');
+
+            state.user = {
+                name: "Arend",
+                address: {
+                    street: "Haarlemmrweg",
+                    number: 195,
+                    city: "Amsterdam"
+                }
+            };
+
+            assert('state.displayAddress === "Haarlemmrweg 195, Amsterdam"');
+
+            state.user.address.street = "Haarlemmerweg";
+
+            assert('state.displayAddress === "Haarlemmerweg 195, Amsterdam"');
+        }
+
+        function testBindings() {
+
+            state = new LacesState();
+
+            state.defineProperty("firstName", "Arend");
+            state.defineProperty("lastName", "van Beelen");
+            state.defineProperty("fullName", function() { return this.firstName + " " + this.lastName; })
+                 .bind(function(_newValue, _oldValue) {
+                     newValue = _newValue;
+                     oldValue = _oldValue;
+                 });
+
+            assert('newValue === "Arend van Beelen"');
+            assert('oldValue === undefined');
+
+            state.firstName = "Arie";
+
+            assert('newValue === "Arie van Beelen"');
+            assert('oldValue === "Arend van Beelen"');
+        }
+
+        function main() {
+
+            for (var key in window) {
+                if (key.substr(0, 4) != "test") {
+                    continue;
+                }
+
+                try {
+                    window[key]();
+                } catch (exception) {
+                    var errorFeedback = document.createElement("p");
+                    errorFeedback.className = "feedback";
+                    errorFeedback.innerText = "Exception: " + exception.toString() + " (in test " + key + ")";
+                    document.body.appendChild(errorFeedback);
+                    fail();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
