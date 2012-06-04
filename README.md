@@ -1,4 +1,3 @@
-
 # laces.js
 
 Laces.js provides a minimal implicit state machine with automatic bindings
@@ -21,7 +20,7 @@ var state = new LacesState();
 
 The state machine is called implicit because the state is defined (implicitly)
 by the set of properties that will be assigned to it (as opposed to how a
-typical final state machine* works).
+typical finite state machine* works).
 
 *) See: http://en.wikipedia.org/wiki/Finite-state_machine
 
