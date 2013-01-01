@@ -1,6 +1,6 @@
 # laces.js
 
-Laces.js provides the M (of Model) in MVC, while you tie the rest.
+Laces.js provides the M in MVC, while you tie the rest.
 
 
 ## Rationale
