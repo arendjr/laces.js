@@ -17,9 +17,10 @@ with the laces to tie your model to whatever View or Controller you prefer. It
 consists of about 500 lines of JavaScript code, including whitespace and comments.
 
 The project was created because I wanted a good model to use with an HTML5 map
-editor for a game engine I'm working on. The map editor has a canvas view and uses
-a custom WebSockets-based API for server communication, leaving me with little use
-for templating engines and XHR integration most other MVC frameworks provide.
+editor for a [game engine](https://github.com/arendjr/PlainText) I'm working on.
+The map editor has a canvas view and uses a custom WebSockets-based API for server
+communication, leaving me with little use for templating engines and XHR
+integration most other MVC frameworks provide.
 
 
 ## Basic Usage
