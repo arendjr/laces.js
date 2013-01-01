@@ -16,53 +16,62 @@
 </head>
 <body>
     <p>
-        <a href="javascript:state.backgroundColor = 'green';">Green</a>
-        <a href="javascript:state.backgroundColor = 'red';">Red</a>
-        <a href="javascript:state.backgroundColor = 'yellow';">Yellow</a>
+        <a href="javascript:model.backgroundColor = 'green';">Green</a>
+        <a href="javascript:model.backgroundColor = 'red';">Red</a>
+        <a href="javascript:model.backgroundColor = 'yellow';">Yellow</a>
     </p>
     <p id="color-text">Click one of the links, mate!</p>
     <p><button id="huge-toggle">I will make things huge for you...</button></p>
     <p>
         <button id="create-user">Create User</button>
         <button id="delete-user">Delete User</button>
-        <input type="text" id="user-name" value="">
-        <button id="update-name">Update Name</button>
+        <input type="text" id="user-name" value="" disabled>
+        <button id="update-name" disabled>Update Name</button>
     </p>
     <p>Display name: <span id="display-name"></span></p>
 
     <script type="text/javascript">
-        var state = new LacesState();
+        var model = new LacesModel({
+            backgroundColor: "red",
+            isRed: function() { return this.backgroundColor === "red"; },
+            colorText: function() {
+                return this.isRed ? "It's red, dude!" :
+                       this.isHuge ? "Dunno, but it's huge!" : "Dunno...";
+            },
 
-        // colors
-        state.defineProperty("backgroundColor", "red");
-        state.defineProperty("isRed", function() { return this.backgroundColor == "red"; });
-        state.defineProperty("colorText", function() {
-            return this.isRed ? "It's red, dude!" :
-                   this.isHuge ? "Dunno, but it's huge!" : "Dunno...";
-        });
-        state.bind("backgroundColor", function(value) {
-            $("body").css("backgroundColor", value);
-        });
-        state.bind("colorText", function(value) { $("#color-text").text(value); });
+            isHuge: false,
 
-        // huge?
-        state.defineProperty("isHuge", false).bind(function(value) {
-            $("body").toggleClass("huge", value);
+            user: null,
+            displayName: function() {
+               return this.user && this.user.name || "Anonymous";
+            }
         });
 
-        $("#huge-toggle").click(function() { state.isHuge = !state.isHuge; });
-
-        // user name
-        state.defineProperty("user", null).bind(function(value) {
-            $("#user-name,#update-name").attr("disabled", value === null);
+        // color-related bindings
+        model.bind("change:backgroundColor", function(event) {
+            $("body").css("backgroundColor", event.value);
         });
-        state.defineProperty("displayName", function() {
-            return this.user && this.user.name || "Anonymous";
-        }).bind(function(value) { $("#display-name").text(value); });
+        model.bind("change:colorText", function(event) {
+            $("#color-text").text(event.value);
+        });
 
-        $("#create-user").click(function() { state.user = { "name": "Joe" }; });
-        $("#delete-user").click(function() { state.user = null; });
-        $("#update-name").click(function() { state.user.name = $("#user-name").val(); });
+        // isHuge property binding
+        model.bind("change:isHuge", function(event) {
+            $("body").toggleClass("huge", event.value);
+        });
+        $("#huge-toggle").click(function() { model.isHuge = !model.isHuge; });
+
+        // user-related bindings
+        model.bind("change:user", function(event) {
+            $("#user-name,#update-name").attr("disabled", event.value === null);
+        });
+        model.bind("change:displayName", function(event) {
+            $("#display-name").text(event.value);
+        });
+
+        $("#create-user").click(function() { model.user = { "name": "Joe" }; });
+        $("#delete-user").click(function() { model.user = null; });
+        $("#update-name").click(function() { model.user.name = $("#user-name").val(); });
     </script>
 </body>
 </html>
