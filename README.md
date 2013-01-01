@@ -1,57 +1,67 @@
 # laces.js
 
-Laces.js provides a minimal implicit state machine with automatic bindings
+Laces.js provides the M (of Model) in MVC, while you tie the rest.
 
 
 ## Rationale
 
-Ever found yourself in the situation where it would be convenient to define
-variables in terms of other variables, and have all of them update whenever one
-of them changes value? If your answer is yes, then Laces.js might be just for
-you!
+While there are plenty of MVC frameworks available for JavaScript, most of them
+dictate a variety of other application design choices on you. For example,
+Backbone.js requires that you use underscore.js, Ember.js comes with its own
+templating system, AngularJS requires you to extend the DOM, and so on. A few
+frameworks require (or strongly encourage) you to use CoffeeScript, and many
+carry significant overhead.
 
-## Usage
+Laces.js by contrast provides you with a Model, but nothing more. It provides you
+with the laces to tie your model to whatever View or Controller you prefer. It
+consists of about 500 lines of JavaScript code, including whitespace and comments.
 
-Laces.js works as an implicit state machine. First, you create a state object:
-
-```js
-var state = new LacesState();
-```
-
-The state machine is called implicit because the state is defined (implicitly)
-by the set of properties that will be assigned to it (as opposed to how a
-typical finite state machine* works).
-
-*) See: http://en.wikipedia.org/wiki/Finite-state_machine
+The project was created because I wanted a good model to use with an HTML5 map
+editor for a game engine I'm working on. The map editor has a canvas view and uses
+a custom WebSockets-based API for server communication, leaving me with little use
+for templating engines and XHR integration most other MVC frameworks provide.
 
 
-### Defining properties
+## Basic Usage
 
-We can define properties using the defineProperty() method:
+Laces.js works as a model with automatic data binding. First, you create a model:
 
 ```js
-state.defineProperty("firstName", "Arend");
-state.defineProperty("lastName", "van Beelen");
+var model = new LacesModel();
 ```
 
-As you can see, nothing more than the property name and the initial value are
-required. Once the property is defined, it can be accessed using dot-notation on
-the state object:
+We can set properties using the set() method:
+
+```js
+model.set("firstName", "Arend");
+model.set("lastName", "van Beelen");
+```
+
+Once a property is set, it can be accessed using dot notation on the model object:
 
 ```js
 state.firstName; // "Arend"
 ```
 
-More interesting is defining properties by using the value of other properties:
+As a shorthand form, properties can also be set using nothing but the constructor:
 
 ```js
-state.defineProperty("fullName", function() { return this.firstName + " " + this.lastName; });
-
-state.fullName; // "Arend van Beelen"
+var model = new LacesModel({
+     firstName: "Arend",
+     lastName: "van Beelen"
+});
 ```
 
-Still no rocket science, however. But let's watch what happens when we now
-modify one of the variables that we have used to define the fullName property:
+You can also define properties that reference other properties:
+
+```js
+model.set("fullName", function() { return this.firstName + " " + this.lastName; });
+
+model.fullName; // "Arend van Beelen"
+```
+
+When a property is updated, any other properties that depend on its value are also
+updated:
 
 ```js
 state.firstName = "Arie";
@@ -59,60 +69,60 @@ state.firstName = "Arie";
 state.fullName; // "Arie van Beelen"
 ```
 
-As you can see, changes the value of a single property now automatically updates
-all properties that are defined in terms of that property. Needless to say, this
-behavior can also be chained, so that a property that relies on fullName also
-gets updated when firstName or lastName is modified.
+As you can see, changes to the value of a single property now automatically update
+all properties that depend on that property. This behavior can also be chained, so
+that a property that depends on fullName for example, also gets updated when
+firstName or lastName is modified.
 
 
-### Nested properties
+### Nested Properties
 
-It is also possible to use nested properties within your state object. Example:
+It is also possible to use nested properties within your model. Example:
 
 ```js
-state.defineProperty("user", null);
-state.defineProperty("displayName", function() { return this.user && this.user.name || "Anonymous"; });
+model.set("user", null);
+model.set("displayName", function() { return this.user && this.user.name || "Anonymous"; });
 ```
 
 There are now several ways of modifying the state.user.name property, each of
-which will reflect on the displayName property:
+which will reflect on the displayName properly:
 
 ```js
-state.user = { name: "Arend" };
+model.user = { name: "Arend" };
 
-state.displayName; // "Arend"
+model.displayName; // "Arend"
 
-state.user.name = "Arie";
+model.user.name = "Arie";
 
-state.displayName; // "Arie"
+model.displayName; // "Arie"
 
-state.user = null;
+model.user = null;
 
-state.displayName; // "Anonymous"
+model.displayName; // "Anonymous"
 ```
 
 
-### Custom bindings
+### Custom Bindings and Templates
 
-Finally, you may be interested in binding a custom callback to whenever one of those
+You may be interested in binding a custom callback to whenever one of those
 properties changes value:
 
 ```js
-state.bind("fullName", function(newValue, oldValue) { $(".full-name").text(newValue); });
+model.bind("change:fullName", function(event) { $(".full-name").text(event.value); });
 ```
 
-Bindings can also be chained to the defineProperty() call:
+You can also watch the whole model instead of a specific property. This is an
+effective way to integrate with template systems, for example:
 
 ```js
-state.defineProperty("fullName", function() { return this.firstName + " " + this.lastName; })
-     .bind(function(newValue, oldValue) { $(".full-name").text(newValue); });
+var addressCardTemplate = Hogan.compile("<div class=\"address-card\">" +
+                                        "<p>{{fullName}}</p>" +
+                                        "<p>{{address}}</p>" +
+                                        "<p>{{postalCode}} {{cityName}}</p>" +
+                                        "<p>{{countryName}}</p>" +
+                                        "</div>");
+model.bind("change", function(event) { addressCardTemplate.render(model); });
 ```
-
-Note that by default, the callback is also called initially on binding, so that you
-don't need to write your initialization code twice. If you want to disable this
-behavior however, you can pass an options object with the noInitialFire property to
-true.
-
 
 ## Demo
 
