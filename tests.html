@@ -4,10 +4,6 @@
     <title>Laces.js Test Suite</title>
     <script type="text/javascript" src="laces.js"></script>
     <style type="text/css">
-        body {
-            background-color: green;
-        }
-
         .feedback {
             font-size: large;
             font-weight: bold;
@@ -15,11 +11,11 @@
     </style>
 </head>
 <body onload="main()">
-    <p id="success-feedback" class="feedback">All tests passed.</p>
+    <p id="success-feedback" class="feedback"></p>
 
     <script type="text/javascript">
 
-        var state, newValue, oldValue;
+        var model, newValue, oldValue;
 
         function fail() {
 
@@ -30,86 +26,110 @@
             }
         }
 
-        function assert(statement) {
+        function assert(modelment) {
 
-            eval("var result = !!(" + statement + ");");
+            eval("var result = !!(" + modelment + ");");
             if (!result) {
-                var errorFeedback = document.createElement("p");
-                errorFeedback.className = "feedback";
-                errorFeedback.innerText = "Assertion failed: " + statement;
-                document.body.appendChild(errorFeedback);
-                fail();
+                throw "Assertion failed: " + modelment;
+            }
+        }
+
+        function assertEqual(actual, expected) {
+
+            eval("var result = (" + actual + ");");
+            if (result !== expected) {
+                var resultStr;
+                if (result === undefined) {
+                    resultStr = "undefined";
+                } else if (result === null) {
+                    resultStr = "null";
+                } else {
+                    resultStr = result.toString();
+                }
+                throw "Assertion failed: " + actual + " === " + expected +
+                      " (actual: " + resultStr + ")";
             }
         }
 
         function testProperties() {
 
-            state = new LacesState();
+            model = new LacesModel({
+                firstName: "Arend",
+                lastName: "van Beelen"
+            });
 
-            state.defineProperty("firstName", "Arend");
-            state.defineProperty("lastName", "van Beelen");
+            assertEqual("model.firstName", "Arend");
 
-            assert('state.firstName === "Arend"');
+            model.set("fullName", function() {
+                return this.firstName + " " + this.lastName;
+            });
 
-            state.defineProperty("fullName", function() { return this.firstName + " " + this.lastName; });
+            assertEqual("model.fullName", "Arend van Beelen");
 
-            assert('state.fullName === "Arend van Beelen"');
+            model.firstName = "Arie";
 
-            state.firstName = "Arie";
-
-            assert('state.fullName === "Arie van Beelen"');
+            assertEqual("model.fullName", "Arie van Beelen");
         }
 
         function testNestedProperties() {
 
-            state = new LacesState();
+            model = new LacesModel({
+                user: null,
+                displayName: function() {
+                    return this.user && this.user.name || "Anonymous";
+                }
+            });
+            
+            assertEqual("model.displayName", "Anonymous");
 
-            state.defineProperty("user", null);
-            state.defineProperty("displayName", function() { return this.user && this.user.name || "Anonymous"; });
+            model.user = { name: "Arend" };
 
-            state.user = { name: "Arend" };
+            assertEqual("model.displayName", "Arend");
 
-            assert('state.displayName === "Arend"');
+            model.user.name = "Arie";
 
-            state.user.name = "Arie";
+            assertEqual("model.displayName", "Arie");
 
-            assert('state.displayName === "Arie"');
+            model.user = null;
 
-            state.user = null;
-
-            assert('state.displayName === "Anonymous"');
+            assertEqual("model.displayName", "Anonymous");
         }
 
         function testNestedProperties2() {
 
-            state = new LacesState();
+            model = new LacesModel();
 
-            state.defineProperty("user", { name: "Arend" });
-            state.defineProperty("displayName", function() { return this.user.name || "Anonymous"; });
+            model.set("user", { name: "Arend" });
+            model.set("displayName", function() {
+                return this.user.name || "Anonymous";
+            });
 
-            assert('state.displayName === "Arend"');
+            assertEqual("model.displayName", "Arend");
 
-            state.user.name = "Arie";
+            model.user.name = "Arie";
 
-            assert('state.displayName === "Arie"');
+            assertEqual("model.displayName", "Arie");
 
-            state.user = { name: "Arend" };
+            model.user = { name: "Arend" };
 
-            assert('state.displayName === "Arend"');
+            assertEqual("model.displayName", "Arend");
         }
 
         function testNestedProperties3() {
 
-            state = new LacesState();
+            model = new LacesModel({
+                user: null,
+                displayAddress: function() {
+                    return this.user && this.user.address &&
+                           (this.user.address.street + " " + this.user.address.number + ", " +
+                            this.user.address.city) ||
+                           "No address given";
+                }
+            });
 
-            state.defineProperty("user", null);
-            state.defineProperty("displayAddress", function() { return this.user && this.user.address &&
-                                                                (this.user.address.street + " " + this.user.address.number + ", " + this.user.address.city) ||
-                                                                "No address given"; });
+            assertEqual("model.displayAddress", "No address given");
 
-            assert('state.displayAddress === "No address given"');
-
-            state.user = {
+            model.user = {
                 name: "Arend",
                 address: {
                     street: "Haarlemmrweg",
@@ -118,32 +138,61 @@
                 }
             };
 
-            assert('state.displayAddress === "Haarlemmrweg 195, Amsterdam"');
+            assertEqual("model.displayAddress", "Haarlemmrweg 195, Amsterdam");
 
-            state.user.address.street = "Haarlemmerweg";
+            model.user.address.street = "Haarlemmerweg";
 
-            assert('state.displayAddress === "Haarlemmerweg 195, Amsterdam"');
+            assertEqual("model.displayAddress", "Haarlemmerweg 195, Amsterdam");
         }
 
         function testBindings() {
 
-            state = new LacesState();
+            newValue = null;
+            oldValue = null;
 
-            state.defineProperty("firstName", "Arend");
-            state.defineProperty("lastName", "van Beelen");
-            state.defineProperty("fullName", function() { return this.firstName + " " + this.lastName; })
-                 .bind(function(_newValue, _oldValue) {
-                     newValue = _newValue;
-                     oldValue = _oldValue;
-                 });
+            model = new LacesModel({
+                firstName: "Arend",
+                lastName: "van Beelen",
+                fullName: function() {
+                    return this.firstName + " " + this.lastName;
+                }
+            });
+            model.bind("change:fullName", function(event) {
+                model.log("fullName changed");
+                newValue = event.value;
+                oldValue = event.oldValue;
+            });
 
-            assert('newValue === "Arend van Beelen"');
-            assert('oldValue === undefined');
+            assertEqual("model.fullName", "Arend van Beelen");
+            
+            model.firstName = "Arie";
 
-            state.firstName = "Arie";
+            assertEqual("newValue", "Arie van Beelen");
+            assertEqual("oldValue", "Arend van Beelen");
+        }
 
-            assert('newValue === "Arie van Beelen"');
-            assert('oldValue === "Arend van Beelen"');
+        function testArray() {
+
+            model = new LacesModel();
+
+            model.set("rooms", [{ "id": 1 }, { "id": 3 }]);
+            model.set("numRooms", function() { return this.rooms.length; });
+            model.set("lastRoomId", function() {
+                return this.rooms.length === 0 ? undefined : this.rooms[this.rooms.length - 1].id;
+            });
+
+            assertEqual("model.numRooms", 2);
+            assertEqual("model.lastRoomId", 3);
+
+            model.rooms.push({ "id": 7 });
+
+            assertEqual("model.numRooms", 3);
+            assertEqual("model.lastRoomId", 7);
+
+            model.rooms[2].id = 4;
+
+            assertEqual("model.numRooms", 3);
+            assertEqual("model.lastRoomId", 4);
         }
 
         function main() {
@@ -158,10 +207,19 @@
                 } catch (exception) {
                     var errorFeedback = document.createElement("p");
                     errorFeedback.className = "feedback";
-                    errorFeedback.innerText = "Exception: " + exception.toString() + " (in test " + key + ")";
+                    errorFeedback.textContent = (exception.toString().substr(0, 9) !== "Assertion" ?
+                                                 "Exception: " : "") + 
+                                                exception.toString() +
+                                                " (in test " + key + ")";
                     document.body.appendChild(errorFeedback);
                     fail();
                 }
+            }
+
+            var successFeedback = document.getElementById("success-feedback");
+            if (successFeedback) {
+                successFeedback.textContent = "All tests passed.";
+                document.body.style.backgroundColor = "green";
             }
         }
     </script>
