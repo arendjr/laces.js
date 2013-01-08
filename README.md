@@ -113,7 +113,8 @@ model.bind("change:fullName", function(event) { $(".full-name").text(event.value
 ```
 
 You can also watch the whole model instead of a specific property. This is an
-effective way to integrate with template systems, for example:
+effective way to integrate with template systems. For example, the following
+code shows how to render a Hogan.js template when the model changes:
 
 ```js
 var addressCardTemplate = Hogan.compile("<div class=\"address-card\">" +
@@ -124,6 +125,24 @@ var addressCardTemplate = Hogan.compile("<div class=\"address-card\">" +
                                         "</div>");
 model.bind("change", function(event) { addressCardTemplate.render(model); });
 ```
+
+
+### Require.js Usage
+
+If you want to use Laces.js with Require.js, you can do so easily. Example:
+
+```js
+require(["laces"], function(Laces) {
+     var model = new Laces.Model({
+          firstName: "Arend",
+          lastName: "van Beelen"
+     });
+});
+```
+
+As you can see, the LacesModel type is now defined as the Model property on
+the Laces object. The same applies to the other Laces types.
+
 
 ## Demo
 
