@@ -127,6 +127,18 @@ remove a property from a Map, you should use remove():
 model.user.remove("name");
 ```
 
+You can iterate over the properties in a Map in exactly the same way as a plain
+JavaScript object. Just don't forget to use the hasOwnProperty() guard (which
+you should do anyway, according to jslint):
+
+```js
+for (var propertyName in model.user) {
+     if (model.user.hasOwnProperty(propertyName)) {
+          console.log("Property " + propertyName + " has value: " + model.user[propertyName]);
+     }
+}
+```
+
 Unlike a Model, a Map does not support computed properties. Assigning a function
 to a property would simply set the value to be that function. If you really want
 computed properties in nested objects, it is possible to nest Models:
