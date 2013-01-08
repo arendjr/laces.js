@@ -135,8 +135,8 @@ computed properties in nested objects, it is possible to nest Models:
 model.user = new LacesModel({ name: "Arend" });
 ```
 
-Arrays are supported to, and a Laces Array is created implicitly when you assign
-an array to a Laces property:
+Arrays are supported too, and a Laces Array is created implicitly when you
+assign an array to a Laces property:
 
 ```js
 model.user.friends = [];
