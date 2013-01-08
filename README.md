@@ -14,7 +14,7 @@ carry significant overhead.
 
 Laces.js by contrast provides you with a Model, but nothing more. It provides you
 with the laces to tie your model to whatever View or Controller you prefer. It
-consists of about 500 lines of JavaScript code, including whitespace and comments.
+consists of under 600 lines of JavaScript code, including whitespace and comments.
 
 The project was created because I wanted a good model to use with an HTML5 map
 editor for a [game engine](https://github.com/arendjr/PlainText) I'm working on.
@@ -53,7 +53,8 @@ var model = new LacesModel({
 });
 ```
 
-You can also define properties that reference other properties:
+You can also define properties that reference other properties. We call these
+computed properties:
 
 ```js
 model.set("fullName", function() { return this.firstName + " " + this.lastName; });
@@ -61,8 +62,8 @@ model.set("fullName", function() { return this.firstName + " " + this.lastName; 
 model.fullName; // "Arend van Beelen"
 ```
 
-When a property is updated, any other properties that depend on its value are also
-updated:
+When a property is updated, any computed properties that depend on its value are
+also updated:
 
 ```js
 state.firstName = "Arie";
@@ -100,6 +101,39 @@ model.displayName; // "Arie"
 model.user = null;
 
 model.displayName; // "Anonymous"
+```
+
+
+### Maps and Arrays
+
+01234567890123456789012345678901234567890123456789012345678901234567890123456789
+The properties of a Laces Model can contain more than just primitives. They also
+support Maps (also known as dictionaries) and Arrays.
+
+You may not have realized it, but you've already seen a Laces Map in action. The
+example above, with the nested properties, used a Laces Map. Every time you
+assign assign a plain JavaScript object to a Laces property, the value gets
+converted automatically to a Map. The assignment of the user object above could
+thus also have been written as:
+
+```js
+model.user = new LacesMap({ name: "Arend" });
+```
+
+The API for a Laces Map is the same as a Laces Model. If you want to add a
+previously unknown property to a Map, you have to use set(). If you want to
+remove a property from a Map, you should use remove():
+
+```js
+model.user.remove("name");
+```
+
+Unlike a Model, a Map does not support computed properties. Assigning a function
+to a property would simply set the value to be that function. If you really want
+computed properties in nested objects, it is possible to nest Models:
+
+```js
+model.user = new LacesModel({ name: "Arend" });
 ```
 
 
@@ -147,6 +181,9 @@ the Laces object. The same applies to the other Laces types.
 ## Demo
 
 See: https://github.com/arendjr/laces.js/tree/master/demo
+
+For a real-world example, see the PlainText
+[map model](https://github.com/arendjr/PlainText/blob/master/web/mapmodel/model.js).
 
 
 ## Compatibility
