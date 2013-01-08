@@ -106,7 +106,6 @@ model.displayName; // "Anonymous"
 
 ### Maps and Arrays
 
-01234567890123456789012345678901234567890123456789012345678901234567890123456789
 The properties of a Laces Model can contain more than just primitives. They also
 support Maps (also known as dictionaries) and Arrays.
 
@@ -135,6 +134,28 @@ computed properties in nested objects, it is possible to nest Models:
 ```js
 model.user = new LacesModel({ name: "Arend" });
 ```
+
+Arrays are supported to, and a Laces Array is created implicitly when you assign
+an array to a Laces property:
+
+```js
+model.user.friends = [];
+```
+
+You may also assign a Laces Array explicitly:
+
+```js
+model.user.friends = new LacesArray();
+```
+
+The API for a Laces Array is exactly the same as for a regular JavaScript array,
+but it can be bound to in the same way as a Laces Map or Model:
+
+```js
+mode.user.friends.bind("change", function(event) { console.log("Friends changed"); });
+```
+
+Read on to the next section for more about bindings.
 
 
 ### Custom Bindings and Templates
