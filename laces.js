@@ -7,24 +7,32 @@
 // LacesModel. The methods defined here are available on all said object types.
 function LacesObject() {
 
-    this._bindings = [];
-    this._eventListeners = {};
-    this._eventsPaused = false;
+    Object.defineProperty(this, "_bindings", { "value": [], "writable": true });
+    Object.defineProperty(this, "_eventListeners", { "value": {}, "writable": true });
+    Object.defineProperty(this, "_heldEvents", { "value": null, "writable": true });
 }
 
 // Bind an event listener to the event with the specified name.
 //
 // eventName - Name of the event to bind to. Can be "add", "change", "remove" or
-//             "change:<propertyName>".
+//             "change:<propertyName>". Multiple event names may be given
+//             separated by spaces.
 // listener - Callback function that will be invoked when the event is fired.
 //            The callback will receive an event parameter, the contents of
 //            which relies on the event parameter given to the fire() method.
 LacesObject.prototype.bind = function(eventName, listener) {
 
-    if (!this._eventListeners.hasOwnProperty(eventName)) {
-        this._eventListeners[eventName] = [];
+    if (eventName.indexOf(" ") > -1) {
+        var eventNames = eventName.split(" ");
+        for (var i = 0, length = eventNames.length; i < length; i++) {
+            this.bind(eventNames[i], listener);
+        }
+    } else {
+        if (!this._eventListeners.hasOwnProperty(eventName)) {
+            this._eventListeners[eventName] = [];
+        }
+        this._eventListeners[eventName].push(listener);
     }
-    this._eventListeners[eventName].push(listener);
 };
 
 // Fire an event and invoke all the listeners bound to it.
@@ -35,13 +43,20 @@ LacesObject.prototype.bind = function(eventName, listener) {
 //         set to match the event name.
 LacesObject.prototype.fire = function(eventName, event) {
 
-    this.log("Firing " + eventName);
-    if (!this._eventsPaused && this._eventListeners.hasOwnProperty(eventName)) {
-        event = event || {};
-        event.name = eventName;
+    event = event || {};
+    event.name = eventName;
 
+    var i = 0, length;
+    if (this._heldEvents instanceof Array) {
+        for (length = this._heldEvents.length; i < length; i++) {
+            if (this._heldEvents[i].name === eventName) {
+                return;
+            }
+        }
+        this._heldEvents.push(event);
+    } else if (this._eventListeners.hasOwnProperty(eventName)) {
         var listeners = this._eventListeners[eventName];
-        for (var i = 0, length = listeners.length; i < length; i++) {
+        for (length = listeners.length; i < length; i++) {
             listeners[i].call(this, event);
         }
     }
@@ -54,21 +69,45 @@ LacesObject.prototype.log = function(message) {
     }
 };
 
-// Pause all firing of events. When called, no change events will be fired from
-// this object until resumeEvents() is called.
+// Call this method if you plan to do many changes at once. When this method has
+// been called all events which should be fired will be put on hold instead. The
+// events will be called when fireHeldEvents() is called, but any duplicate
+// events will be removed before doing so (thus avoiding the overhead of running
+// event listeners multiple times).
 //
-// Warning: Use this method at your own risk! Properties that depend on other
-// properties may lose their consistency.
-LacesObject.prototype.pauseEvents = function() {
+// Warning: Make sure you will call fireHeldEvents() when you're done. Computed
+//          properties may have inconsistent values until fireHeldEvents() is
+//          called.
+LacesObject.prototype.holdEvents = function() {
 
-    this._eventsPaused = true;
+    this._heldEvents = [];
 };
 
-// Resume firing of events. Call this method after pauseEvents() to resume
-// firing of events.
-LacesObject.prototype.resumeEvents = function() {
+// Fire all held events, and resume normal firing of events. Call this method
+// after when you're making changes after a call to holdEvents().
+LacesObject.prototype.fireHeldEvents = function() {
 
-    this._eventsPaused = false;
+    if (this._heldEvents === null) {
+        this.log("Need a call to holdEvents() before calling fireHeldEvents()");
+        return;
+    }
+
+    var heldEvents = this._heldEvents;
+    this._heldEvents = null;
+
+    for (var i = 0, length = heldEvents.length; i < length; i++) {
+        var heldEvent = heldEvents[i];
+        this.fire(heldEvent.name, heldEvent);
+    }
+};
+
+// Discard all held events, and resume normal firing of events.
+//
+// Warning: Use of this method may leave computed properties in an inconsistent
+//          state.
+LacesObject.prototype.discardHeldEvents = function() {
+
+    this._heldEvents = null;
 };
 
 // Unbind a previously bound listener callback.
@@ -159,8 +198,8 @@ function LacesMap(object) {
 
     LacesObject.call(this);
 
-    this._values = {};
-    
+    Object.defineProperty(this, "_values", { "value": {}, "writable": true });
+
     if (object) {
         for (var key in object) {
             if (object.hasOwnProperty(key)) {
@@ -216,42 +255,59 @@ LacesMap.prototype.remove = function(key) {
 //
 // key - Key of the property to set.
 // value - Value of the property to set.
-// options - Optional options object. May contain a type property, which if set
-//           determines the type which will be enforced on the property. The
-//           following values are recognized for the type property:
-//           "boolean"        - The property will be either true or false.
-//           "float"/"number" - The property will be a floating point number.
-//           "integer"        - The property will be an integer number.
-//           "string"         - The property will be a string.
+// options - Optional options object. This may contain the following properties:
+//           type - If set, this determines the type which will be enforced on
+//                  the property. The following values are recognized for this
+//                  property:
+//                  "boolean"        - Values will be either true or false.
+//                  "float"/"number" - Values will be a floating point number.
+//                  "integer"        - Values will be an integer number.
+//                  "string"         - Values will be a string.
+//           setFilter - This property may contain a custom function that will
+//                       filter any set values. It takes the new value as
+//                       argument and returns the filtered value. It should
+//                       throw an exception if the new value is not valid.
+//                       This property cannot be used in combination with the
+//                       type property.
 LacesMap.prototype.set = function(key, value, options) {
 
     options = options || {};
 
     var self = this;
     var getter = function() { return this._values[key]; };
-    var setter = function(newValue) { return self._setValue(key, newValue); };
+    var setter = function(newValue) { self._setValue(key, newValue); };
 
     if (typeof value === "function") {
         this._setValue(key, value);
-        setter = function() { self.log("Function properties cannot be set."); };
+        setter = function() { self.log("Computed properties cannot be set."); };
     } else if (options.type) {
         if (options.type === "boolean") {
-            setter = function(newValue) { return self._setValue(key, !!newValue); };
+            setter = function(newValue) { self._setValue(key, !!newValue); };
         } else if (options.type === "float" || options.type === "number") {
-            setter = function(newValue) { return self._setValue(key, parseFloat(newValue, 10)); };
+            setter = function(newValue) { self._setValue(key, parseFloat(newValue, 10)); };
         } else if (options.type === "integer") {
-            setter = function(newValue) { return self._setValue(key, parseInt(newValue, 10)); };
+            setter = function(newValue) { self._setValue(key, parseInt(newValue, 10)); };
         } else if (options.type === "string") {
-            setter = function(newValue) { return self._setValue(key, "" + newValue); };
+            setter = function(newValue) { self._setValue(key, "" + newValue); };
         }
         setter(value);
+    } else if (options.newFilter) {
+        setter = function(newValue) {
+            try {
+                self._setValue(key, options.newFilter(newValue));
+            } catch (exception) {
+                self.log("Invalid value for property " + key + ": " + newValue);
+            }
+        };
     } else {
         this._setValue(key, value);
     }
 
     Object.defineProperty(this, key, {
         "get": getter,
-        "set": setter
+        "set": setter,
+        "configurable": true,
+        "enumerable": true
     });
 };
 
@@ -291,14 +347,15 @@ LacesMap.prototype._setValue = function(key, value) {
 //
 // Laces models behave exactly like Laces maps, with only one exception: When a
 // property is assigned a function as its value, the return value of the
-// function is used as value for the property. If the function references other
-// properties of the model, the value will automatically get updated when one of
-// those other properties is updated. The properties which the function
-// references are automatically detected if they have the form of
-// "this.propertyName". References to properties of properties and array
-// elements of properties are detected as well. If the function depends on other
-// (non-detected) properties, you can specify those by giving an array of
-// dependencies as part of the options argument to the set() method.
+// function is used as value for the property. We call this a computed property.
+// If the computed property references other properties of the model, the value
+// will automatically get updated when one of those other properties is updated.
+// The properties which the computed property references are automatically
+// detected if they have the form of "this.propertyName". References to
+// properties of properties and array elements of properties are detected as
+// well. If the property depends on other (non-detected) properties, you can
+// specify those by giving an array of dependencies as part of the options
+// argument to the set() method.
 //
 // Examples:
 //
@@ -481,16 +538,17 @@ LacesArray.prototype.splice = function(index, howMany) {
     var removedElements = Array.prototype.splice(this, arguments);
     var addedElements = arguments.slice(2);
 
+    var i, length;
     if (removedElements.length > 0) {
-        for (var i = 0, length = removedElements.length; i < length; i++) {
+        for (i = 0, length = removedElements.length; i < length; i++) {
             this._unbindValue(removedElements[i]);
         }
         this.fire("remove", { "elements": removedElements });
         this.fire("change", { "elements": removedElements });
     }
     if (addedElements.length > 0) {
-        for (var j = 0, length = addedElements.length; j < length; j++) {
-            this._bindValue(index + j, addedElements[j]);
+        for (i = 0, length = addedElements.length; i < length; i++) {
+            this._bindValue(index + i, addedElements[j]);
         }
         this.fire("add", { "elements": addedElements });
         this.fire("change", { "elements": addedElements });
