@@ -520,9 +520,9 @@ LacesArray.prototype.unshift = function() {
 
 if (typeof define === 'function' && define.amd) {
     define({
-        "LacesModel": LacesModel,
-        "LacesMap": LacesMap,
-        "LacesArray": LacesArray
+        "Model": LacesModel,
+        "Map": LacesMap,
+        "Array": LacesArray
     });
 } else {
     window.LacesModel = LacesModel;
@@ -530,4 +530,4 @@ if (typeof define === 'function' && define.amd) {
     window.LacesArray = LacesArray;
 }
 
-}(this));
+})(this);
