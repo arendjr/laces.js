@@ -323,6 +323,9 @@ LacesMap.prototype._setValue = function(key, value) {
     var newProperty = false;
     if (this._values.hasOwnProperty(key)) {
         var oldValue = this._values[key];
+        if (oldValue === value) {
+            return;
+        }
 
         this._unbindValue(oldValue);
 
