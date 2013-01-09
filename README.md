@@ -161,7 +161,10 @@ model.user.friends = new LacesArray();
 ```
 
 The API for a Laces Array is exactly the same as for a regular JavaScript array,
-but it can be bound to in the same way as a Laces Map or Model:
+but when setting values in the array you should use the set() method rather than
+bracket notation to make sure the changes are properly registered.
+
+Arrays can be bound to in the same way as a Laces Map or Model:
 
 ```js
 mode.user.friends.bind("change", function(event) { console.log("Friends changed"); });
