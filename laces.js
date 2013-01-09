@@ -538,7 +538,7 @@ LacesArray.prototype.sort = function() {
 // elements.
 LacesArray.prototype.splice = function(index, howMany) {
 
-    var removedElements = Array.prototype.splice(this, arguments);
+    var removedElements = Array.prototype.splice.apply(this, arguments);
     var addedElements = [];
     for (var i = 2, length = arguments.length; i < length; i++) {
         addedElements.push(arguments[i]);
