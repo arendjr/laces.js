@@ -14,7 +14,7 @@ carry significant overhead.
 
 Laces.js by contrast provides you with a Model, but nothing more. It provides you
 with the laces to tie your model to whatever View or Controller you prefer. It
-consists of under 600 lines of JavaScript code, including whitespace and comments.
+consists of about 600 lines of JavaScript code, including whitespace and comments.
 
 The project was created because I wanted a good model to use with an HTML5 map
 editor for a [game engine](https://github.com/arendjr/PlainText) I'm working on.
@@ -194,6 +194,14 @@ var addressCardTemplate = Hogan.compile("<div class=\"address-card\">" +
                                         "<p>{{countryName}}</p>" +
                                         "</div>");
 model.bind("change", function(event) { addressCardTemplate.render(model); });
+```
+
+An interesting feature of the bindings is that the listener callback can be
+fired immediately after binding. This may be useful for initialization and
+can save you from some code duplication:
+
+```js
+model.bind("change:fullName", function(event) { $(".full-name").text(event.value); }, { initialFire: true });
 ```
 
 

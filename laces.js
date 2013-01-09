@@ -20,7 +20,13 @@ function LacesObject() {
 // listener - Callback function that will be invoked when the event is fired.
 //            The callback will receive an event parameter, the contents of
 //            which relies on the event parameter given to the fire() method.
-LacesObject.prototype.bind = function(eventName, listener) {
+// options - Optional options object. If you set the "initialFire" property to
+//           true, the listener will be invoked immediately. Beware that unless
+//           eventName specifies a specific property, the event object will be
+//           completely empty the first time.
+LacesObject.prototype.bind = function(eventName, listener, options) {
+
+    options = options || {};
 
     if (eventName.indexOf(" ") > -1) {
         var eventNames = eventName.split(" ");
@@ -32,6 +38,16 @@ LacesObject.prototype.bind = function(eventName, listener) {
             this._eventListeners[eventName] = [];
         }
         this._eventListeners[eventName].push(listener);
+
+        if (options.initialFire) {
+            var event = {};
+            if (eventName.indexOf(":") > -1) {
+                var propertyName = eventName.substr(eventName.indexOf(":") + 1);
+                event.key = propertyName;
+                event.value = this[propertyName];
+            }
+            this.fire(eventName, event);
+        }
     }
 };
 
@@ -444,7 +460,10 @@ function LacesArray() {
 
     var array = [];
     for (var method in LacesArray.prototype) {
-        array[method] = LacesArray.prototype[method];
+        Object.defineProperty(array, method, {
+            "value": LacesArray.prototype[method],
+            "writable": false
+        });
     }
     LacesObject.call(array);
     return array;
@@ -558,7 +577,7 @@ LacesArray.prototype.splice = function(index, howMany) {
         this.fire("add", { "elements": addedElements });
         this.fire("change", { "elements": addedElements });
     }
-    
+
     return removedElements;
 };
 
