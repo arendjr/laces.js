@@ -229,6 +229,9 @@ See: https://github.com/arendjr/laces.js/tree/master/demo
 For a real-world example, see the PlainText
 [map model](https://github.com/arendjr/PlainText/blob/master/web/mapmodel/model.js).
 
+You might also be interested in the
+[TodoMVC example using Laces.js](https://github.com/arendjr/todomvc/tree/gh-pages/labs/architecture-examples/lacesjs).
+
 
 ## Compatibility
 
