@@ -41,7 +41,7 @@ model.set("lastName", "van Beelen");
 Once a property is set, it can be accessed using dot notation on the model object:
 
 ```js
-state.firstName; // "Arend"
+model.firstName; // "Arend"
 ```
 
 As a shorthand form, properties can also be set using nothing but the constructor:
