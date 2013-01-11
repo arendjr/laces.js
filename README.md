@@ -214,17 +214,17 @@ As you saw above, Laces objects generate change events whenever something
 changes. Here's an overview of all the events that get generated.
 
 <table>
-<td><em>Event name</em></td><td><em>Description</em></td>
-<td><b>add</b></td><td><em>Generated when a new property is set on map or
-model, or a new element is added to an array.</em></td>
-<td><b>update</b></td><td><em>Generated when an existing property's value
-or an existing array element is changed.</em></td>
-<td><b>remove</b></td><td><em>Generated when a property or an array element
-is removed.</em></td>
-<td><b>change</b></td><td><em>Generated on any kind of change (add, update or
-remove).</em></td>
-<td><b>change:&lt;propertyName&gt;</b></td><td><em>Generated when a specific
-property is changed.</em></td>
+<tr><td><em>Event name</em></td><td><em>Description</em></td></tr>
+<tr><td><b>add</b></td><td><em>Generated when a new property is set on map or
+model, or a new element is added to an array.</em></td></tr>
+<tr><td><b>update</b></td><td><em>Generated when an existing property's value
+or an existing array element is changed.</em></td></tr>
+<tr><td><b>remove</b></td><td><em>Generated when a property or an array element
+is removed.</em></td></tr>
+<tr><td><b>change</b></td><td><em>Generated on any kind of change (add, update or
+remove).</em></td></tr>
+<tr><td><b>change:&lt;propertyName&gt;</b></td><td><em>Generated when a specific
+property is changed.</em></td></tr>
 </table>
 
 All events carry a payload, which is passed as the event object to the listener
@@ -234,26 +234,26 @@ If the object is a Laces Map or Model, the event object contains the following
 properties:
 
 <table>
-<td><em>Property</em></td><td><em>Description</em></td>
-<td><b>name</b></td><td><em>Name of the triggered event ("add", "update",
-etc..)</em></td>
-<td><b>key</b></td><td><em>Key of the property for which the event is
-generated.</em></td>
-<td><b>value</b></td><td><em>Value of the property for which the event is
-generated. Undefined if this is a remove event.</em></td>
-<td><b>oldValue</b></td><td><em>Previous value of the property (if
-applicable).</em></td>
+<tr><td><em>Property</em></td><td><em>Description</em></td></tr>
+<tr><td><b>name</b></td><td><em>Name of the triggered event ("add", "update",
+etc..)</em></td></tr>
+<tr><td><b>key</b></td><td><em>Key of the property for which the event is
+generated.</em></td></tr>
+<tr><td><b>value</b></td><td><em>Value of the property for which the event is
+generated. Undefined if this is a remove event.</em></td></tr>
+<tr><td><b>oldValue</b></td><td><em>Previous value of the property (if
+applicable).</em></td></tr>
 </table>
 
 If the object is a Laces Array, the event object contains the following
 properties:
 
 <table>
-<td><em>Property</em></td><td><em>Description</em></td>
-<td><b>name</b></td><td><em>Name of the triggered event ("add", "update",
-etc..)</em></td>
-<td><b>elements</b></td><td><em>Array of affected elements (those that
-were added, updated or removed).</em></td>
+<tr><td><em>Property</em></td><td><em>Description</em></td></tr>
+<tr><td><b>name</b></td><td><em>Name of the triggered event ("add", "update",
+etc..)</em></td></tr>
+<tr><td><b>elements</b></td><td><em>Array of affected elements (those that
+were added, updated or removed).</em></td></tr>
 </table>
 
 
