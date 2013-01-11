@@ -196,6 +196,9 @@ var addressCardTemplate = Hogan.compile("<div class=\"address-card\">" +
 model.bind("change", function(event) { addressCardTemplate.render(model); });
 ```
 
+The listener callback function gets executed in the scope of the model to which
+it is bound.
+
 An interesting feature of the bindings is that the listener callback can be
 fired immediately after binding. This may be useful for initialization and
 can save you from some code duplication:
@@ -203,6 +206,47 @@ can save you from some code duplication:
 ```js
 model.bind("change:fullName", function(event) { $(".full-name").text(event.value); }, { initialFire: true });
 ```
+
+
+### Events
+
+As you saw above, Laces objects generate change events whenever something
+changes. Here's an overview of all the events that get generated.
+
+**add** - Generated when a new property is set on map or model, or a new element
+          is added to an array.
+
+**update** - Generated when an existing property's value or an existing array
+             element is changed.
+
+**remove** - Generated when a property or an array element is removed.
+
+**change** - Generated on any kind of change (add, update or remove).
+
+**change:<propertyName>** - Generated when a specific property is changed.
+
+All events carry a payload, which is passed as the event object to the listener
+callback function.
+
+If the object is a Laces Map or Model, the event object contains the following
+properties:
+
+**name** - Name of the triggered event ("add", "update", etc..)
+
+**key** - Key of the property for which the event is generated.
+
+**value** - Value of the property for which the event is generated. Undefined
+            if this is a remove event.
+
+**oldValue** - Previous value of the property (if applicable).
+
+If the object is a Laces Array, the event object contains the following
+properties:
+
+**name** - Name of the triggered event ("add", "update", etc..)
+
+**elements** - Array of affected elements (those that were added, updated or
+               removed).
 
 
 ### Require.js Usage
