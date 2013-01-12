@@ -144,7 +144,7 @@ for (var propertyName in model.user) {
 ```
 
 Unlike a Model, a Map does not support computed properties, and does not fire
-events of the type "change:<propertyName>". Assigning a function
+events of the type "change:&lt;propertyName&gt;". Assigning a function
 to a property would simply set the value to be that function. If you really want
 computed properties in nested objects, it is possible to nest Models:
 
