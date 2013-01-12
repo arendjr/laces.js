@@ -12,20 +12,22 @@ templating system, AngularJS requires you to extend the DOM, and so on. A few
 frameworks require (or strongly encourage) you to use CoffeeScript, and many
 carry significant overhead.
 
-Laces.js by contrast provides you with a Model, but nothing more. It provides you
-with the laces to tie your model to whatever View or Controller you prefer. It
-consists of about 600 lines of JavaScript code, including whitespace and comments.
+Laces.js by contrast provides you with a Model, but nothing more. It provides
+you with the laces to tie your model to whatever View or Controller you prefer.
+It consists of about 600 lines of JavaScript code, including whitespace and
+comments.
 
 The project was created because I wanted a good model to use with an HTML5 map
 editor for a [game engine](https://github.com/arendjr/PlainText) I'm working on.
-The map editor has a canvas view and uses a custom WebSockets-based API for server
-communication, leaving me with little use for templating engines and XHR
+The map editor has a canvas view and uses a custom WebSockets-based API for 
+server communication, leaving me with little use for templating engines and XHR
 integration most other MVC frameworks provide.
 
 
 ## Basic Usage
 
-Laces.js works as a model with automatic data binding. First, you create a model:
+Laces.js works as a model with automatic data binding. First, you create a
+model:
 
 ```js
 var model = new LacesModel();
@@ -38,13 +40,15 @@ model.set("firstName", "Arend");
 model.set("lastName", "van Beelen");
 ```
 
-Once a property is set, it can be accessed using dot notation on the model object:
+Once a property is set, it can be accessed using dot notation on the model
+object:
 
 ```js
 model.firstName; // "Arend"
 ```
 
-As a shorthand form, properties can also be set using nothing but the constructor:
+As a shorthand form, properties can also be set using nothing but the
+constructor:
 
 ```js
 var model = new LacesModel({
@@ -71,10 +75,10 @@ state.firstName = "Arie";
 state.fullName; // "Arie van Beelen"
 ```
 
-As you can see, changes to the value of a single property now automatically update
-all properties that depend on that property. This behavior can also be chained, so
-that a property that depends on fullName for example, also gets updated when
-firstName or lastName is modified.
+As you can see, changes to the value of a single property now automatically
+update all properties that depend on that property. This behavior can also be
+chained, so that a property that depends on fullName for example, also gets
+updated when firstName or lastName is modified.
 
 
 ### Nested Properties
@@ -139,7 +143,8 @@ for (var propertyName in model.user) {
 }
 ```
 
-Unlike a Model, a Map does not support computed properties. Assigning a function
+Unlike a Model, a Map does not support computed properties, and does not fire
+events of the type "change:<propertyName>". Assigning a function
 to a property would simply set the value to be that function. If you really want
 computed properties in nested objects, it is possible to nest Models:
 
@@ -221,10 +226,10 @@ model, or a new element is added to an array.</em></td></tr>
 or an existing array element is changed.</em></td></tr>
 <tr><td><b>remove</b></td><td><em>Generated when a property or an array element
 is removed.</em></td></tr>
-<tr><td><b>change</b></td><td><em>Generated on any kind of change (add, update or
-remove).</em></td></tr>
+<tr><td><b>change</b></td><td><em>Generated on any kind of change (add, update
+or remove).</em></td></tr>
 <tr><td><b>change:&lt;propertyName&gt;</b></td><td><em>Generated when a specific
-property is changed.</em></td></tr>
+property is changed (Laces Models only).</em></td></tr>
 </table>
 
 All events carry a payload, which is passed as the event object to the listener

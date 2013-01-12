@@ -1,5 +1,7 @@
 (function(window) {
 
+"use strict";
+
 // Laces Object constructor.
 //
 // This is the base class for the other laces object types. You should not
@@ -14,9 +16,9 @@ function LacesObject() {
 
 // Bind an event listener to the event with the specified name.
 //
-// eventName - Name of the event to bind to. Can be "add", "change", "remove" or
-//             "change:<propertyName>". Multiple event names may be given
-//             separated by spaces.
+// eventName - Name of the event to bind to. Can be "add", "update", "remove",
+//             "change" or "change:<propertyName>". Multiple event names may be
+//             given separated by spaces.
 // listener - Callback function that will be invoked when the event is fired.
 //            The callback will receive an event parameter, the contents of
 //            which relies on the event parameter given to the fire() method.
@@ -77,10 +79,23 @@ LacesObject.prototype.fire = function(eventName, event) {
                 }
             }
             this._heldEvents.push(event);
-        } else if (this._eventListeners.hasOwnProperty(eventName)) {
-            var listeners = this._eventListeners[eventName];
-            for (length = listeners.length; i < length; i++) {
-                listeners[i].call(this, event);
+        } else {
+            var listeners;
+            if (this._eventListeners.hasOwnProperty(eventName)) {
+                listeners = this._eventListeners[eventName];
+                for (length = listeners.length; i < length; i++) {
+                    listeners[i].call(this, event);
+                }
+            }
+            if (eventName === "change" && event.key && this.constructor.name === "LacesModel") {
+                eventName = "change:" + event.key;
+                event.name = eventName;
+                if (this._eventListeners.hasOwnProperty(eventName)) {
+                    listeners = this._eventListeners[eventName];
+                    for (i = 0, length = listeners.length; i < length; i++) {
+                        listeners[i].call(this, event);
+                    }
+                }
             }
         }
     }
@@ -180,7 +195,7 @@ LacesObject.prototype._bindValue = function(key, value) {
     if (value && value._gotLaces) {
         var self = this;
         var binding = function() {
-            self.fire("change:" + key + " change", { "key": key, "value": value });
+            self.fire("change", { "key": key, "value": value });
         };
         value.bind("change", binding);
         this._bindings.push(binding);
@@ -252,7 +267,7 @@ LacesMap.prototype.remove = function(key) {
         delete this._values[key];
         delete this[key];
 
-        this.fire("remove change:" + key + " change", { "key": key, "oldValue": value });
+        this.fire("remove change", { "key": key, "oldValue": value });
 
         return true;
     } else {
@@ -348,16 +363,16 @@ LacesMap.prototype._setValue = function(key, value) {
     this._bindValue(key, value);
 
     if (newProperty) {
-        this.fire("add change:" + key + " change", event);
+        this.fire("add change", event);
     } else {
-        this.fire("update change:" + key + " change", event);
+        this.fire("update change", event);
     }
 };
 
 
 // Laces Model constructor.
 //
-// Laces models behave exactly like Laces maps, with only one exception: When a
+// Laces models behave the same as Laces maps, with two exception: When a
 // property is assigned a function as its value, the return value of the
 // function is used as value for the property. We call this a computed property.
 // If the computed property references other properties of the model, the value
@@ -385,6 +400,8 @@ LacesMap.prototype._setValue = function(key, value) {
 //   }, {
 //       "dependencies": ["firstName", "lastName", "fullName"]
 //   });
+//
+// Finally, models support "change:<propertyName>" events, which maps don't.
 //
 // object - Optional object to initialize the model with. Properties will be
 //          initialized for all key/value pairs of the object using the set()
