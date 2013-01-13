@@ -315,14 +315,15 @@ LacesMap.prototype.set = function(key, value, options) {
             setter = function(newValue) { self._setValue(key, "" + newValue); };
         }
         setter(value);
-    } else if (options.newFilter) {
+    } else if (options.setFilter) {
         setter = function(newValue) {
             try {
-                self._setValue(key, options.newFilter(newValue));
+                self._setValue(key, options.setFilter(newValue));
             } catch (exception) {
                 self.log("Invalid value for property " + key + ": " + newValue);
             }
         };
+        setter(value);
     } else {
         this._setValue(key, value);
     }
