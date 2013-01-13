@@ -314,7 +314,6 @@ LacesMap.prototype.set = function(key, value, options) {
         } else if (options.type === "string") {
             setter = function(newValue) { self._setValue(key, "" + newValue); };
         }
-        setter(value);
     } else if (options.setFilter) {
         setter = function(newValue) {
             try {
@@ -323,9 +322,6 @@ LacesMap.prototype.set = function(key, value, options) {
                 self.log("Invalid value for property " + key + ": " + newValue);
             }
         };
-        setter(value);
-    } else {
-        this._setValue(key, value);
     }
 
     Object.defineProperty(this, key, {
@@ -334,6 +330,8 @@ LacesMap.prototype.set = function(key, value, options) {
         "configurable": true,
         "enumerable": true
     });
+
+    setter(value);
 };
 
 LacesMap.prototype._setValue = function(key, value) {
