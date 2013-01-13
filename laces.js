@@ -409,7 +409,7 @@ LacesMap.prototype._setValue = function(key, value) {
 //          method.
 function LacesModel(object) {
 
-    this._functions = {};
+    Object.defineProperty(this, "_functions", { "value": {}, "writable": true });
 
     LacesMap.call(this, object);
 }
