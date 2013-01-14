@@ -87,7 +87,7 @@ LacesObject.prototype.fire = function(eventName, event) {
                     listeners[i].call(this, event);
                 }
             }
-            if (eventName === "change" && event.key && this.constructor.name === "LacesModel") {
+            if (eventName === "change" && event.key && this instanceof LacesModel) {
                 eventName = "change:" + event.key;
                 event.name = eventName;
                 if (this._eventListeners.hasOwnProperty(eventName)) {

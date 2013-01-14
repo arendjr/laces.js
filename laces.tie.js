@@ -15,6 +15,7 @@ function LacesTie(model, template, options) {
     options = options || {};
     var editEvent = options.editEvent || "dblclick";
     var saveEvent = options.saveEvent || "blur";
+    var saveOnEnter = (options.saveOnEnter !== false);
 
     var bindings = [];
 
@@ -49,12 +50,26 @@ function LacesTie(model, template, options) {
         return { propertyName: part, value: value, parent: parent };
     }
 
+    function getLaces(node) {
+        var laces = node.getAttribute("data-laces");
+        if (laces && laces.substr(0, 1) === "{" && laces.substr(laces.length - 1) === "}") {
+            var parts = laces.substr(1, laces.length - 2).split(",");
+            var object = {}, r = /^\s+|\s+$/g;
+            for (var i = 0, length = parts.length; i < length; i++) {
+                var keyValue = parts[i].split(":");
+                object[keyValue[0].replace(r, "")] = keyValue[1].replace(r, "");
+            }
+            return object;
+        }
+        return undefined;
+    }
+
     function update(element, lacesProperty) {
-        var value = reference(lacesProperty).value || "";
+        var value = reference(lacesProperty).value;
         if (element.tagName.toLowerCase() === "input") {
-            element.value = value;
+            element.value = value || (element.getAttribute("type") === "number" ? 0 : "");
         } else {
-            element.textContent = value;
+            element.textContent = value || "";
         }
     }
 
@@ -63,7 +78,10 @@ function LacesTie(model, template, options) {
             return;
         }
 
-        var lacesProperty = node.getAttribute("data-laces-property");
+        var laces = getLaces(node);
+        var lacesProperty = (laces ? laces.property : node.getAttribute("data-laces-property"));
+        var lacesEditable = (laces ? laces.editable : node.getAttribute("data-laces-editable"));
+
         if (lacesProperty) {
             var binding = function() {
                 update(node, lacesProperty);
@@ -74,9 +92,7 @@ function LacesTie(model, template, options) {
             binding.parent = ref.parent;
             if (ref.parent.constructor.name === "LacesModel") {
                 ref.parent.bind("change:" + ref.propertyName, binding);
-                model.log("Bound change:" + ref.propertyName);
             } else {
-                model.log("Bound change " + ref.propertyName);
                 ref.parent.bind("change", binding);
             }
 
@@ -85,23 +101,41 @@ function LacesTie(model, template, options) {
                     var newRef = reference(lacesProperty);
                     newRef.parent[newRef.propertyName] = node.value;
                 });
+                if (node.getAttribute("type") === "number") {
+                    node.addEventListener("change", function() {
+                        var newRef = reference(lacesProperty);
+                        newRef.parent[newRef.propertyName] = node.value;
+                    });
+                }
             }
 
             update(node, lacesProperty);
 
-            if (node.getAttribute("data-laces-editable") === "true") {
+            if (lacesEditable === "true") {
                 node.addEventListener(editEvent, function() {
                     var parent = node.parentNode;
                     var input = document.createElement("input");
                     input.setAttribute("type", "text");
                     input.setAttribute("value", node.textContent);
+                    input.setAttribute("class", node.getAttribute("class"))
 
-                    input.addEventListener(saveEvent, function() {
+                    function save() {
                         var newRef = reference(lacesProperty);
                         newRef.parent[newRef.propertyName] = input.value;
                         parent.insertBefore(node, input.nextSibling);
+                        input.removeEventListener(saveEvent, save);
                         parent.removeChild(input);
-                    });
+                    }
+
+                    input.addEventListener(saveEvent, save);
+                    if (saveOnEnter) {
+                        input.addEventListener("keypress", function(event) {
+                            if (event.keyCode === 13) {
+                                save();
+                                event.preventDefault();
+                            }
+                        });
+                    }
 
                     parent.insertBefore(input, node.nextSibling);
                     parent.removeChild(node);
@@ -141,7 +175,7 @@ function LacesTie(model, template, options) {
 
 if (typeof define === "function" && define.amd) {
     define(function(require) {
-        var Laces = require("Laces");
+        var Laces = require("laces");
         Laces.Tie = LacesTie;
         return Laces;
     });
