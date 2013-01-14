@@ -3,6 +3,7 @@
 <head>
     <title>Laces.js Demo</title>
     <script type="text/javascript" src="../laces.js"></script>
+    <script type="text/javascript" src="../laces.tie.js"></script>
     <script type="text/javascript" src="jquery.js"></script>
     <style type="text/css">
         .huge {
@@ -20,23 +21,16 @@
         <a href="javascript:model.backgroundColor = 'red';">Red</a>
         <a href="javascript:model.backgroundColor = 'yellow';">Yellow</a>
     </p>
-    <p id="color-text">Click one of the links, mate!</p>
-    <p><button id="huge-toggle">I will make things huge for you...</button></p>
-    <p>
-        <button id="create-user">Create User</button>
-        <button id="delete-user">Delete User</button>
-        <input type="text" id="user-name" value="" disabled>
-        <button id="update-name" disabled>Update Name</button>
-    </p>
-    <p>Display name: <span id="display-name"></span></p>
+    <p id="color-text"></p>
+    <p><button id="huge-toggle"></button></p>
+    <hr>
 
     <script type="text/javascript">
         var model = new LacesModel({
-            backgroundColor: "red",
+            backgroundColor: "green",
             isRed: function() { return this.backgroundColor === "red"; },
             colorText: function() {
-                return this.isRed ? "It's red, dude!" :
-                       this.isHuge ? "Dunno, but it's huge!" : "Dunno...";
+                return "It's " + this.backgroundColor + (this.isHuge ? " and huge" : "") + "!";
             },
 
             isHuge: false,
@@ -47,31 +41,36 @@
             }
         });
 
-        // color-related bindings
         model.bind("change:backgroundColor", function(event) {
             $("body").css("backgroundColor", event.value);
-        });
+        }, { initialFire: true });
         model.bind("change:colorText", function(event) {
             $("#color-text").text(event.value);
-        });
+        }, { initialFire: true });
 
-        // isHuge property binding
         model.bind("change:isHuge", function(event) {
             $("body").toggleClass("huge", event.value);
-        });
+            $("#huge-toggle").text(this.isHuge ? "I will make things small for you" :
+                                                 "I will make things huge for you");
+        }, { initialFire: true });
         $("#huge-toggle").click(function() { model.isHuge = !model.isHuge; });
 
-        // user-related bindings
-        model.bind("change:user", function(event) {
-            $("#user-name,#update-name").attr("disabled", event.value === null);
-        });
-        model.bind("change:displayName", function(event) {
-            $("#display-name").text(event.value);
-        });
+        // ===================================================================================== //
+
+        var tie = new LacesTie(model,
+            "<p>" +
+                "<button id=\"create-user\">Create User</button> " +
+                "<button id=\"delete-user\">Delete User</button> " +
+                "<input type=\"text\" data-laces-property=\"user.name\">" +
+            "</p>" +
+            "<p>Display name: " +
+                "<span data-laces-property=\"displayName\"></span>" +
+            "</p>"
+        );
+        document.body.appendChild(tie.render());
 
         $("#create-user").click(function() { model.user = { "name": "Joe" }; });
         $("#delete-user").click(function() { model.user = null; });
-        $("#update-name").click(function() { model.user.name = $("#user-name").val(); });
     </script>
 </body>
 </html>

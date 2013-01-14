@@ -57,7 +57,7 @@ LacesObject.prototype.bind = function(eventName, listener, options) {
 //
 // eventName - Name of the event to fire. Multiple event names may be given
 //             separated by spaces.
-// event - Optional event object to pass to the listener callbacks. If ommitted,
+// event - Optional event object to pass to the listener callbacks. If omitted,
 //         the empty object is assumed. Either way, the "name" property will be
 //         set to match the event name.
 LacesObject.prototype.fire = function(eventName, event) {
@@ -151,9 +151,22 @@ LacesObject.prototype.discardHeldEvents = function() {
 
 // Unbind a previously bound listener callback.
 //
-// eventName - Name of the event to which the listener was bound.
+// eventName - Name of the event to which the listener was bound. If omitted,
+//             the listener will be unbound from all event types.
 // listener - Callback function to unbind.
 LacesObject.prototype.unbind = function(eventName, listener) {
+
+    if (typeof eventName === "function") {
+        var removed = false;
+        for (eventName in this._eventListeners) {
+            if (this._eventListeners.hasOwnProperty(eventName)) {
+                if (this.unbind(eventName, listener)) {
+                    removed = true;
+                }
+            }
+        }
+        return removed;
+    }
 
     if (!this._eventListeners.hasOwnProperty(eventName)) {
         return false;
