@@ -195,6 +195,32 @@
             assertEqual("model.lastRoomId", 4);
         }
 
+        function testMap() {
+
+            model = new LacesModel();
+
+            model.set("rooms", {
+                "1": { "id": 1 },
+                "3": { "id": 3 }
+            });
+
+            model.set("numRooms", function() {
+                var count = 0;
+                for (var id in this.rooms) {
+                    if (this.rooms.hasOwnProperty(id)) {
+                        count++;
+                    }
+                }
+                return count;
+            });
+
+            assertEqual("model.numRooms", 2);
+
+            model.rooms.set(7, { "id": 7 });
+
+            assertEqual("model.numRooms", 3);
+        }
+
         function main() {
 
             for (var key in window) {
