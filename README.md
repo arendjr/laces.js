@@ -219,17 +219,17 @@ As you saw above, Laces objects generate change events whenever something
 changes. Here's an overview of all the events that get generated.
 
 <table>
-<tr><td><em>Event name</em></td><td><em>Description</em></td></tr>
-<tr><td><b>add</b></td><td><em>Generated when a new property is set on map or
-model, or a new element is added to an array.</em></td></tr>
-<tr><td><b>update</b></td><td><em>Generated when an existing property's value
-or an existing array element is changed.</em></td></tr>
-<tr><td><b>remove</b></td><td><em>Generated when a property or an array element
-is removed.</em></td></tr>
-<tr><td><b>change</b></td><td><em>Generated on any kind of change (add, update
-or remove).</em></td></tr>
-<tr><td><b>change:&lt;propertyName&gt;</b></td><td><em>Generated when a specific
-property is changed (Laces Models only).</em></td></tr>
+<tr><td><em><b>Event name</b></em></td><td><em>Description</em></td></tr>
+<tr><td><b>add</b></td><td>Generated when a new property is set on map or
+model, or a new element is added to an array.</td></tr>
+<tr><td><b>update</b></td><td>Generated when an existing property's value
+or an existing array element is changed.</td></tr>
+<tr><td><b>remove</b></td><td>Generated when a property or an array element
+is removed.</td></tr>
+<tr><td><b>change</b></td><td>Generated on any kind of change (add, update
+or remove).</td></tr>
+<tr><td><b>change:&lt;propertyName&gt;</b></td><td>Generated when a specific
+property is changed (Laces Models only).</td></tr>
 </table>
 
 All events carry a payload, which is passed as the event object to the listener
@@ -239,15 +239,15 @@ If the object is a Laces Map or Model, the event object contains the following
 properties:
 
 <table>
-<tr><td><em>Property</em></td><td><em>Description</em></td></tr>
-<tr><td><b>name</b></td><td><em>Name of the triggered event ("add", "update",
-etc..)</em></td></tr>
-<tr><td><b>key</b></td><td><em>Key of the property for which the event is
-generated.</em></td></tr>
-<tr><td><b>value</b></td><td><em>Value of the property for which the event is
-generated. Undefined if this is a remove event.</em></td></tr>
-<tr><td><b>oldValue</b></td><td><em>Previous value of the property (if
-applicable).</em></td></tr>
+<tr><td><em><b>Property</b></em></td><td><em>Description</em></td></tr>
+<tr><td><b>name</b></td><td>Name of the triggered event ("add", "update",
+etc..)</td></tr>
+<tr><td><b>key</b></td><td>Key of the property for which the event is
+generated.</td></tr>
+<tr><td><b>value</b></td><td>Value of the property for which the event is
+generated. Undefined if this is a remove event.</td></tr>
+<tr><td><b>oldValue</b></td><td>Previous value of the property (if
+applicable).</td></tr>
 </table>
 
 If the object is a Laces Array, the event object contains the following
@@ -320,9 +320,45 @@ An actual template might look something like this (using Hogan.js as example):
 </ul>
 ```
 
+Options can be specified using a single mapping with the data-laces
+attribute, or with separate data-laces-* attributes. The above span element
+could thus also have been written like this:
+
+```html
+<span data-laces-property="someArray[{{index}}].name" data-laces-editable="true"></span>
+```
+
+Here is an overview of the supported optons:
+
+<table>
+<tr><td><em><b>Option</b></em></td><td><em>Value</em></td><td><em>Description</em></td></tr>
+<tr><td><b>property</b></td><td>property reference</td><td>Reference to the
+property whose value will be used for the content of the element. The content
+will automatically be updated if the property value changes. If the element is
+an input element, the property value will be the input's value and if the
+value of the input changes, the change will be written back to the
+model.</td></tr>
+<tr><td><b>editable</b></td><td>true | false</td><td>If a property is tied to
+a non-input element, use this option to make it editable. The element will be
+replaced by an input element on double-click (by default).</td></tr>
+<tr><td><b>default</b></td><td>any value</td><td>Default value to use if the
+property referenced by the property option is not set. If not given, an empty
+string would be used (or the number 0 for an input element with a number
+type).</td></tr>
+<tr><td><b>visible</b></td><td>property reference</td><td>Reference to the
+property that will determine the visibility of the element. If the property
+value evaluates to false, the display style will be set to none. Precede the
+reference with an exclamation mark (!) to reverse the evaluation.</td></tr>
+<tr><td><b>checked</b></td><td>property reference</td><td>Reference to the
+property that will determine whether the element is checked. If the property
+value evaluates to true, the checked attribute will be set. Precede the
+reference with an exclamation mark (!) to reverse the evaluation.</td></tr>
+</table>
+
 Note that the render() function returns a DocumentFragment. You should not
 convert this fragment into a string before adding it to the DOM, as you would
 lose any live bindings.
+
 
 ### Laces.js Local
 
