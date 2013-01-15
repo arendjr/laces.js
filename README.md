@@ -52,8 +52,8 @@ constructor:
 
 ```js
 var model = new LacesModel({
-     firstName: "Arend",
-     lastName: "van Beelen"
+firstName: "Arend",
+lastName: "van Beelen"
 });
 ```
 
@@ -137,9 +137,9 @@ you should do anyway, according to jslint):
 
 ```js
 for (var propertyName in model.user) {
-     if (model.user.hasOwnProperty(propertyName)) {
-          console.log("Property " + propertyName + " has value: " + model.user[propertyName]);
-     }
+if (model.user.hasOwnProperty(propertyName)) {
+  console.log("Property " + propertyName + " has value: " + model.user[propertyName]);
+}
 }
 ```
 
@@ -193,11 +193,11 @@ code shows how to render a Hogan.js template when the model changes:
 
 ```js
 var addressCardTemplate = Hogan.compile("<div class=\"address-card\">" +
-                                        "<p>{{fullName}}</p>" +
-                                        "<p>{{address}}</p>" +
-                                        "<p>{{postalCode}} {{cityName}}</p>" +
-                                        "<p>{{countryName}}</p>" +
-                                        "</div>");
+				"<p>{{fullName}}</p>" +
+				"<p>{{address}}</p>" +
+				"<p>{{postalCode}} {{cityName}}</p>" +
+				"<p>{{countryName}}</p>" +
+				"</div>");
 model.bind("change", function(event) { addressCardTemplate.render(model); });
 ```
 
@@ -219,7 +219,7 @@ As you saw above, Laces objects generate change events whenever something
 changes. Here's an overview of all the events that get generated.
 
 <table>
-<tr><td><em><b>Event name</b></em></td><td><em>Description</em></td></tr>
+<tr><td><em>Event name</em></td><td><em>Description</em></td></tr>
 <tr><td><b>add</b></td><td>Generated when a new property is set on map or
 model, or a new element is added to an array.</td></tr>
 <tr><td><b>update</b></td><td>Generated when an existing property's value
@@ -239,7 +239,7 @@ If the object is a Laces Map or Model, the event object contains the following
 properties:
 
 <table>
-<tr><td><em><b>Property</b></em></td><td><em>Description</em></td></tr>
+<tr><td><em>Property</em></td><td><em>Description</em></td></tr>
 <tr><td><b>name</b></td><td>Name of the triggered event ("add", "update",
 etc..)</td></tr>
 <tr><td><b>key</b></td><td>Key of the property for which the event is
@@ -255,10 +255,10 @@ properties:
 
 <table>
 <tr><td><em>Property</em></td><td><em>Description</em></td></tr>
-<tr><td><b>name</b></td><td><em>Name of the triggered event ("add", "update",
-etc..)</em></td></tr>
-<tr><td><b>elements</b></td><td><em>Array of affected elements (those that
-were added, updated or removed).</em></td></tr>
+<tr><td><b>name</b></td><td>Name of the triggered event ("add", "update",
+etc..)</td></tr>
+<tr><td><b>elements</b></td><td>Array of affected elements (those that
+were added, updated or removed).</td></tr>
 </table>
 
 
@@ -331,7 +331,7 @@ could thus also have been written like this:
 Here is an overview of the supported optons:
 
 <table>
-<tr><td><em><b>Option</b></em></td><td><em>Value</em></td><td><em>Description</em></td></tr>
+<tr><td><em>Option</em></td><td><em>Value</em></td><td><em>Description</em></td></tr>
 <tr><td><b>property</b></td><td>property reference</td><td>Reference to the
 property whose value will be used for the content of the element. The content
 will automatically be updated if the property value changes. If the element is
