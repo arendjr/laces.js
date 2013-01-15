@@ -105,7 +105,7 @@ function LacesTie(model, template, options) {
         var lacesProperty = (laces ? laces.property : node.getAttribute("data-laces-property"));
         if (lacesProperty) {
             var lacesDefault = (laces ? laces["default"] : node.getAttribute("data-laces-default"));
-            if (lacesDefault === undefined) {
+            if (lacesDefault === undefined || lacesDefault === null) {
                 lacesDefault = (node.getAttribute("type") === "number") ? 0 : "";
             }
 
