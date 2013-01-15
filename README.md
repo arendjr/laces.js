@@ -14,8 +14,8 @@ carry significant overhead.
 
 Laces.js by contrast provides you with a Model, but nothing more. It provides
 you with the laces to tie your model to whatever View or Controller you prefer.
-It consists of about 600 lines of JavaScript code, including whitespace and
-comments.
+It consists of about 650 lines of JavaScript code, including whitespace and
+comments. Optionally, you can add one or more add-ons for extra features.
 
 The project was created because I wanted a good model to use with an HTML5 map
 editor for a [game engine](https://github.com/arendjr/PlainText) I'm working on.
@@ -279,6 +279,64 @@ As you can see, the LacesModel type is now defined as the Model property on
 the Laces object. The same applies to the other Laces types.
 
 
+## Add-ons
+
+### Laces.js Tie
+
+Laces.js Tie is an add-on that adds two-way data bindings between a Laces Model
+and a rendered template. Laces.js Tie uses HTML5 *data attributes* to create its
+bindings and is template-engine agnostic. It has already been confirmed to work
+in tandem with Handlebars.js, Hogan.js and Underscore.js's built-in templates,
+in addition to plain HTML strings.
+
+For example, here's how to tie a Hogan.js template to a Laces Model:
+
+```js
+var template = Hogan.compile(myTemplateString);
+var tie = new LacesTie(model, template);
+someDomElement.appendChild(tie.render());
+```
+
+If the template iterates over an array or other list, you may want to rerender
+it when the list changes. In such case you can use something like the following
+instead of the last line from above:
+
+```js
+model.someArray.bind("add remove", function() {
+     someDomElement.innerHTML = "";
+     someDomElement.appendChild(tie.render());
+}, { initialFire: true });
+```
+
+An actual template might look something like this (using Hogan.js as example):
+
+```html
+<ul>
+     {{#someArray}}
+     <li>
+          <span data-laces="{ property: someArray[{{index}}].name, editable: true }"></span>
+     </li>
+     {{/someArray}}
+</ul>
+```
+
+Note that the render() function returns a DocumentFragment. You should not
+convert this fragment into a string before adding it to the DOM, as you would
+lose any live bindings.
+
+### Laces.js Local
+
+Laces.js Local provides a very simple extension over the default Laces Model.
+A Local Model will automatically sync with LocalStorage:
+
+```js
+var model = new LacesLocalModel('my-model'));
+```
+
+Any properties you set on the model will still be there when the page is
+reloaded.
+
+
 ## Demo
 
 See: https://github.com/arendjr/laces.js/tree/master/demo
@@ -288,6 +346,9 @@ For a real-world example, see the PlainText
 
 You might also be interested in the
 [TodoMVC example using Laces.js](https://github.com/arendjr/todomvc/tree/gh-pages/labs/architecture-examples/lacesjs).
+
+And there's even a variation on the TodoMVC example that uses
+[the Laces.js Tie and Laces.js Local add-ons](https://github.com/arendjr/todomvc/tree/gh-pages/labs/architecture-examples/laces_addons).
 
 
 ## Compatibility
