@@ -14,7 +14,7 @@ function LacesTie(model, template, options) {
 
     options = options || {};
     var editEvent = options.editEvent || "dblclick";
-    var saveEvent = options.saveEvent || "blur";
+    var saveEvent = options.saveEvent || "change";
     var saveOnEnter = (options.saveOnEnter !== false);
 
     var bindings = [];
@@ -101,12 +101,6 @@ function LacesTie(model, template, options) {
                     var newRef = reference(lacesProperty);
                     newRef.parent[newRef.propertyName] = node.value;
                 });
-                if (node.getAttribute("type") === "number") {
-                    node.addEventListener("change", function() {
-                        var newRef = reference(lacesProperty);
-                        newRef.parent[newRef.propertyName] = node.value;
-                    });
-                }
             }
 
             update(node, lacesProperty);
@@ -123,7 +117,6 @@ function LacesTie(model, template, options) {
                         var newRef = reference(lacesProperty);
                         newRef.parent[newRef.propertyName] = input.value;
                         parent.insertBefore(node, input.nextSibling);
-                        input.removeEventListener(saveEvent, save);
                         parent.removeChild(input);
                     }
 
@@ -131,6 +124,7 @@ function LacesTie(model, template, options) {
                     if (saveOnEnter) {
                         input.addEventListener("keypress", function(event) {
                             if (event.keyCode === 13) {
+                                input.removeEventListener(saveEvent, save);
                                 save();
                                 event.preventDefault();
                             }

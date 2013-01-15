@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Laces.js Demo</title>
+    <script type="text/javascript" src="../laces.js"></script>
+    <script type="text/javascript" src="../laces.tie.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+        var model = new LacesModel({
+            user: null,
+            displayName: function() {
+               return this.user && this.user.name || "Anonymous";
+            }
+        });
+
+        var tie = new LacesTie(model,
+            "<p>" +
+                "<button id=\"create-user\">Create User</button> " +
+                "<button id=\"delete-user\">Delete User</button> " +
+                "<input type=\"text\" data-laces-property=\"user.name\">" +
+            "</p>" +
+            "<p>Display name: " +
+                "<span data-laces-property=\"displayName\"></span>" +
+            "</p>"
+        );
+        document.body.appendChild(tie.render());
+
+        document.getElementById("create-user").addEventListener("click", function() {
+            model.user = { "name": "Joe" };
+        }, false);
+        document.getElementById("delete-user").addEventListener("click", function() {
+            model.user = null;
+        }, false);
+    </script>
+</body>
+</html>

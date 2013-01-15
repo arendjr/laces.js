@@ -35,6 +35,9 @@ LacesObject.prototype.bind = function(eventName, listener, options) {
         for (var i = 0, length = eventNames.length; i < length; i++) {
             this.bind(eventNames[i], listener);
         }
+        if (options.initialFire) {
+            this.fire(eventNames[0], {});
+        }
     } else {
         if (!this._eventListeners.hasOwnProperty(eventName)) {
             this._eventListeners[eventName] = [];
