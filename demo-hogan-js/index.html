@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Laces.js Demo</title>
+    <script type="text/javascript" src="../laces.js"></script>
+    <script type="text/javascript" src="../laces.tie.js"></script>
+    <script type="text/javascript" src="hogan.js"></script>
+</head>
+<body>
+    <div id="contents"></div>
+
+    <script type="text/javascript">
+        var model = new LacesModel({
+            users: {},
+            userArray: function() {
+                var array = [];
+                for (var id in this.users) {
+                    if (this.users.hasOwnProperty(id)) {
+                        array.push(this.users[id]);
+                    }
+                }
+                return array;
+            }
+        });
+
+        var template = Hogan.compile(
+            '<p>Select user: ' +
+                '<select>' +
+                '{{#userArray}}' +
+                    '<option>{{name}}</option>' +
+                '{{/userArray}}' +
+                '</select>' +
+            '</p>' +
+            '<hr>' +
+            '<ul>' +
+                '{{#userArray}}' +
+                '<li data-user-id="{{id}}">' +
+                    '<span data-laces="{ property: users[{{id}}].name, editable: true }"></span>' +
+                    '<button class="remove-user">Remove</button>' +
+                '</li>' +
+                '{{/userArray}}' +
+                '<li>' +
+                    '<input id="name-input" type="text">' +
+                    '<button id="add-user">Add</button>' +
+                '</li>' +
+            '</ul>'
+        );
+
+        var tie = new LacesTie(model, template);
+        model.bind("change:userArray", function() {
+            var contents = document.getElementById("contents");
+            contents.innerHTML = "";
+            contents.appendChild(tie.render());
+        }, { initialFire: true });
+
+        var uniqueId = 1;
+        document.body.addEventListener("click", function(event) {
+            if (event.target.getAttribute("id") === "add-user") {
+                var id = "user_" + uniqueId++;
+                model.users.set(id, {
+                    id: id,
+                    name: document.getElementById("name-input").value
+                });
+            } else if (event.target.className === "remove-user") {
+                var userId = event.target.parentNode.getAttribute("data-user-id");
+                model.users.remove(userId);
+            }
+        }, false);
+    </script>
+</body>
+</html>
