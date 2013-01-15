@@ -138,34 +138,31 @@ function LacesTie(model, template, options) {
                     var input = document.createElement("input");
                     input.setAttribute("type", "text");
                     input.setAttribute("value", node.textContent);
-                    input.setAttribute("class", node.getAttribute("class"))
+                    input.setAttribute("class", node.getAttribute("class"));
 
                     function saveHandler() {
+                        input.removeEventListener(saveEvent, saveHandler);
+                        input.removeEventListener("keypress", keypressHandler);
+                        input.removeEventListener("blur", saveHandler);
+
                         var newRef = reference(lacesProperty);
                         newRef.parent[newRef.propertyName] = input.value;
                         parent.insertBefore(node, input.nextSibling);
-                        if (saveOnBlur) {
-                            input.removeEventListener("blur", blurHandler);
-                        }
                         parent.removeChild(input);
                     }
-                    function blurHandler() {
-                        input.removeEventListener(saveEvent, saveHandler);
-                        saveHandler();
+                    function keypressHandler(event) {
+                        if (event.keyCode === 13) {
+                            saveHandler();
+                            event.preventDefault();
+                        }
                     }
 
                     input.addEventListener(saveEvent, saveHandler);
                     if (saveOnEnter) {
-                        input.addEventListener("keypress", function(event) {
-                            if (event.keyCode === 13) {
-                                input.removeEventListener(saveEvent, saveHandler);
-                                saveHandler();
-                                event.preventDefault();
-                            }
-                        });
+                        input.addEventListener("keypress", keypressHandler);
                     }
                     if (saveOnBlur) {
-                        input.addEventListener("blur", blurHandler);
+                        input.addEventListener("blur", saveHandler);
                     }
 
                     parent.insertBefore(input, node.nextSibling);
