@@ -281,6 +281,7 @@ the Laces object. The same applies to the other Laces types.
 
 ## Add-ons
 
+<a id="tie"></a>
 ### Laces.js Tie
 
 Laces.js Tie is an add-on that adds two-way data bindings between a Laces Model
@@ -360,6 +361,7 @@ convert this fragment into a string before adding it to the DOM, as you would
 lose any live bindings.
 
 
+<a id="local"></a>
 ### Laces.js Local
 
 Laces.js Local provides a very simple extension over the default Laces Model.
