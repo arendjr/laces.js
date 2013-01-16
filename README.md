@@ -52,8 +52,8 @@ constructor:
 
 ```js
 var model = new LacesModel({
-firstName: "Arend",
-lastName: "van Beelen"
+    firstName: "Arend",
+    lastName: "van Beelen"
 });
 ```
 
@@ -137,9 +137,9 @@ you should do anyway, according to jslint):
 
 ```js
 for (var propertyName in model.user) {
-if (model.user.hasOwnProperty(propertyName)) {
-  console.log("Property " + propertyName + " has value: " + model.user[propertyName]);
-}
+    if (model.user.hasOwnProperty(propertyName)) {
+        console.log("Property " + propertyName + " has value: " + model.user[propertyName]);
+    }
 }
 ```
 
@@ -193,11 +193,11 @@ code shows how to render a Hogan.js template when the model changes:
 
 ```js
 var addressCardTemplate = Hogan.compile("<div class=\"address-card\">" +
-				"<p>{{fullName}}</p>" +
-				"<p>{{address}}</p>" +
-				"<p>{{postalCode}} {{cityName}}</p>" +
-				"<p>{{countryName}}</p>" +
-				"</div>");
+                                        "<p>{{fullName}}</p>" +
+                                        "<p>{{address}}</p>" +
+                                        "<p>{{postalCode}} {{cityName}}</p>" +
+                                        "<p>{{countryName}}</p>" +
+                                        "</div>");
 model.bind("change", function(event) { addressCardTemplate.render(model); });
 ```
 
