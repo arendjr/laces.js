@@ -377,7 +377,7 @@ reloaded.
 
 ## Demo
 
-See: https://github.com/arendjr/laces.js/tree/master/demo
+There's a bunch of demos included in this repository, just check them out.
 
 For a real-world example, see the PlainText
 [map model](https://github.com/arendjr/PlainText/blob/master/web/mapmodel/model.js).
