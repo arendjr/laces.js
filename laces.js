@@ -209,9 +209,13 @@ LacesObject.prototype._gotLaces = true;
 LacesObject.prototype._bindValue = function(key, value) {
 
     if (value && value._gotLaces) {
-        var self = this;
+        var self = this, recursionGuard = false;
         var binding = function() {
-            self.fire("change", { "key": key, "value": value });
+            if (!recursionGuard) {
+                recursionGuard = true;
+                self.fire("change", { "key": key, "value": value });
+                recursionGuard = false;
+            }
         };
         value.bind("change", binding);
         this._bindings.push(binding);
