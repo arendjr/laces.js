@@ -7,11 +7,12 @@
 // This is the base class for the other laces object types. You should not
 // instantiate this class directly. Instead, use LacesArray, LacesMap or
 // LacesModel. The methods defined here are available on all said object types.
-function LacesObject() {
+function LacesObject(options) {
 
     Object.defineProperty(this, "_bindings", { "value": [], "writable": true });
     Object.defineProperty(this, "_eventListeners", { "value": {}, "writable": true });
     Object.defineProperty(this, "_heldEvents", { "value": null, "writable": true });
+    Object.defineProperty(this, "_options", { "value": options || {} });
 }
 
 // Bind an event listener to the event with the specified name.
@@ -190,14 +191,14 @@ LacesObject.prototype.wrap = function(value) {
     if (value && value._gotLaces) {
         wrapped = value;
     } else if (value instanceof Array) {
-        wrapped = new LacesArray();
+        wrapped = new LacesArray(this._options);
         for (var i = 0, length = value.length; i < length; i++) {
             wrapped.set(i, value[i]);
         }
     } else if (value instanceof Function) {
         wrapped = value;
     } else if (value instanceof Object) {
-        wrapped = new LacesMap(value);
+        wrapped = new LacesMap(value, this._options);
     } else {
         wrapped = value;
     }
@@ -247,9 +248,13 @@ LacesObject.prototype._unbindValue = function(value) {
 // object - Optional object to initialize the map with. Properties will be
 //          initialized for all key/value pairs of the object using the set()
 //          method.
-function LacesMap(object) {
+// options - Optional options object. This may contain the following properties:
+//           bindChildren - If set to false, no bindings will be created between
+//                          change events for properties and the change event of
+//                          this map.
+function LacesMap(object, options) {
 
-    LacesObject.call(this);
+    LacesObject.call(this, options);
 
     Object.defineProperty(this, "_values", { "value": {}, "writable": true });
 
@@ -370,7 +375,9 @@ LacesMap.prototype._setValue = function(key, value) {
             return;
         }
 
-        this._unbindValue(oldValue);
+        if (this._options.bindChildren !== false) {
+            this._unbindValue(oldValue);
+        }
 
         event.oldValue = oldValue;
     } else {
@@ -379,7 +386,9 @@ LacesMap.prototype._setValue = function(key, value) {
 
     this._values[key] = value;
 
-    this._bindValue(key, value);
+    if (this._options.bindChildren !== false) {
+        this._bindValue(key, value);
+    }
 
     if (newProperty) {
         this.fire("add change", event);
@@ -425,11 +434,15 @@ LacesMap.prototype._setValue = function(key, value) {
 // object - Optional object to initialize the model with. Properties will be
 //          initialized for all key/value pairs of the object using the set()
 //          method.
-function LacesModel(object) {
+// options - Optional options object. This may contain the following properties:
+//           bindChildren - If set to false, no bindings will be created between
+//                          change events for properties and the change event of
+//                          this model.
+function LacesModel(object, options) {
 
     Object.defineProperty(this, "_functions", { "value": {}, "writable": true });
 
-    LacesMap.call(this, object);
+    LacesMap.call(this, object, options);
 }
 
 LacesModel.prototype = new LacesMap();
@@ -485,7 +498,12 @@ LacesModel.prototype._reevaluate = function(key) {
 // - When setting an element, you should use the set() method rather than the
 //   default bracket notation. This assures the proper change events get
 //   generated.
-function LacesArray() {
+//
+// options - Optional options object. This may contain the following properties:
+//           bindChildren - If set to false, no bindings will be created between
+//                          change events for properties and the change event of
+//                          this array.
+function LacesArray(options) {
 
     var array = [];
     for (var method in LacesArray.prototype) {
@@ -494,7 +512,7 @@ function LacesArray() {
             "writable": false
         });
     }
-    LacesObject.call(array);
+    LacesObject.call(array, options);
     return array;
 }
 
@@ -516,7 +534,9 @@ LacesArray.prototype.get = function(index) {
 LacesArray.prototype.pop = function() {
 
     var value = Array.prototype.pop.call(this);
-    this._unbindValue(value);
+    if (this._options.bindChildren !== false) {
+        this._unbindValue(value);
+    }
     this.fire("remove change", { "elements": [value] });
     return value;
 };
@@ -528,7 +548,9 @@ LacesArray.prototype.push = function() {
     var elements = [];
     for (var i = 0, length = arguments.length; i < length; i++) {
         var value = this.wrap(arguments[i]);
-        this._bindValue(this.length, value);
+        if (this._options.bindChildren !== false) {
+            this._bindValue(this.length, value);
+        }
         elements.push(value);
     }
 
@@ -547,7 +569,9 @@ LacesArray.prototype.remove = function(index) {
 
     if (index < this.length) {
         var removedElement = this[index];
-        this._unbindValue(removedElement);
+        if (this._options.bindChildren !== false) {
+            this._unbindValue(removedElement);
+        }
         Array.prototype.splice.call(this, index, 1);
         this.fire("remove change", { "elements": [removedElement] });
     }
@@ -568,13 +592,18 @@ LacesArray.prototype.set = function(index, value) {
 
     var newProperty = true;
     if (index < this.length) {
-        this._unbindValue(this[index]);
+        if (this._options.bindChildren !== false) {
+            this._unbindValue(this[index]);
+        }
         newProperty = false;
     }
 
     value = this.wrap(value);
     this[index] = value;
-    this._bindValue(index, value);
+
+    if (this._options.bindChildren !== false) {
+        this._bindValue(index, value);
+    }
 
     if (newProperty) {
         this.fire("add change", { "elements": [value] });
@@ -588,7 +617,9 @@ LacesArray.prototype.set = function(index, value) {
 LacesArray.prototype.shift = function() {
 
     var value = Array.prototype.shift.call(this);
-    this._unbindValue(value);
+    if (this._options.bindChildren !== false) {
+        this._unbindValue(value);
+    }
     this.fire("remove change", { "elements": [value] });
     return value;
 };
@@ -613,14 +644,18 @@ LacesArray.prototype.splice = function(index, howMany) {
     }
 
     if (removedElements.length > 0) {
-        for (i = 0, length = removedElements.length; i < length; i++) {
-            this._unbindValue(removedElements[i]);
+        if (this._options.bindChildren !== false) {
+            for (i = 0, length = removedElements.length; i < length; i++) {
+                this._unbindValue(removedElements[i]);
+            }
         }
         this.fire("remove change", { "elements": removedElements });
     }
     if (addedElements.length > 0) {
-        for (i = 0, length = addedElements.length; i < length; i++) {
-            this._bindValue(index + i, addedElements[j]);
+        if (this._options.bindChildren !== false) {
+            for (i = 0, length = addedElements.length; i < length; i++) {
+                this._bindValue(index + i, addedElements[j]);
+            }
         }
         this.fire("add change", { "elements": addedElements });
     }
@@ -634,7 +669,9 @@ LacesArray.prototype.unshift = function() {
 
     for (var i = 0, length = arguments.length; i < length; i++) {
         var value = this.wrap(arguments[i]);
-        this._bindValue(i, value);
+        if (this._options.bindChildren !== false) {
+            this._bindValue(i, value);
+        }
         arguments[i] = value;
     }
 
