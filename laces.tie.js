@@ -79,8 +79,12 @@ function LacesTie(model, template, options) {
 
     function update(element, lacesProperty, defaultValue) {
         var value = reference(lacesProperty).value;
-        if (element.tagName === "INPUT") {
-            element.value = value || defaultValue;
+        if (element.tagName === "INPUT" || element.tagName === "SELECT") {
+            if (element.getAttribute("type") === "checkbox") {
+                element.checked = !!value;
+            } else {
+                element.value = value || defaultValue;
+            }
         } else {
             element.textContent = value || defaultValue;
         }
@@ -93,6 +97,10 @@ function LacesTie(model, template, options) {
 
     function updateChecked(element, lacesProperty) {
         element.checked = !!reference(lacesProperty).value;
+    }
+
+    function updateDisabled(element, lacesProperty) {
+        element.disabled = !!reference(lacesProperty).value;
     }
 
     function process(node) {
@@ -125,7 +133,8 @@ function LacesTie(model, template, options) {
             if (node.tagName === "INPUT") {
                 node.addEventListener(saveEvent, function() {
                     var newRef = reference(lacesProperty);
-                    newRef.parent[newRef.propertyName] = node.value;
+                    newRef.parent[newRef.propertyName] = (node.getAttribute("type") === "checkbox" ?
+                                                          !!node.checked : node.value);
                 });
             }
 
@@ -206,6 +215,23 @@ function LacesTie(model, template, options) {
             }
 
             updateChecked(node, lacesChecked);
+        }
+
+        var lacesDisabled = (laces ? laces.disabled : node.getAttribute("data-laces-disabled"));
+        if (lacesDisabled) {
+            binding = function() {
+                updateDisabled(node, lacesDisabled);
+            }
+            bindings.push(binding);
+
+            if (model instanceof Laces.Model) {
+                ref = reference(lacesDisabled);
+                model.bind("change:" + ref.root, binding);
+            } else {
+                model.bind("change", binding);
+            }
+
+            updateDisabled(node, lacesDisabled);
         }
 
         for (var i = 0, length = node.childNodes.length; i < length; i++) {

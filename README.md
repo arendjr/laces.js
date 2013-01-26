@@ -354,6 +354,10 @@ reference with an exclamation mark (!) to reverse the evaluation.</td></tr>
 property that will determine whether the element is checked. If the property
 value evaluates to true, the checked attribute will be set. Precede the
 reference with an exclamation mark (!) to reverse the evaluation.</td></tr>
+<tr><td><b>disabled</b></td><td>property reference</td><td>Reference to the
+property that will determine whether the element is disabled. If the property
+value evaluates to true, the disabled attribute will be set. Precede the
+reference with an exclamation mark (!) to reverse the evaluation.</td></tr>
 </table>
 
 Note that the render() function returns a DocumentFragment. You should not
