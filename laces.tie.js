@@ -119,7 +119,7 @@ function LacesTie(model, template, options) {
 
             binding = function() {
                 update(node, lacesProperty, lacesDefault);
-            }
+            };
             bindings.push(binding);
 
             ref = reference(lacesProperty);
@@ -185,7 +185,7 @@ function LacesTie(model, template, options) {
         if (lacesVisible) {
             binding = function() {
                 updateVisibility(node, lacesVisible);
-            }
+            };
             bindings.push(binding);
 
             ref = reference(lacesVisible);
@@ -203,7 +203,7 @@ function LacesTie(model, template, options) {
         if (lacesChecked) {
             binding = function() {
                 updateChecked(node, lacesChecked);
-            }
+            };
             bindings.push(binding);
 
             ref = reference(lacesChecked);
@@ -221,7 +221,7 @@ function LacesTie(model, template, options) {
         if (lacesDisabled) {
             binding = function() {
                 updateDisabled(node, lacesDisabled);
-            }
+            };
             bindings.push(binding);
 
             if (model instanceof Laces.Model) {

@@ -452,6 +452,10 @@ LacesModel.prototype.set = function(key, value, options) {
 
     options = options || {};
 
+    function reevalualate() {
+        self._reevaluate(key);
+    }
+
     if (typeof value === "function") {
         var dependencies = options.dependencies || [];
 
@@ -471,9 +475,7 @@ LacesModel.prototype.set = function(key, value, options) {
         var self = this;
         for (var i = 0, length = dependencies.length; i < length; i++) {
             var dependency = dependencies[i];
-            this.bind("change:" + dependency, function() {
-                self._reevaluate(key);
-            });
+            this.bind("change:" + dependency, reevaluate);
         }
 
         value = value.call(this);
@@ -667,12 +669,13 @@ LacesArray.prototype.splice = function(index, howMany) {
 // length of the array.
 LacesArray.prototype.unshift = function() {
 
+    var args = [];
     for (var i = 0, length = arguments.length; i < length; i++) {
         var value = this.wrap(arguments[i]);
         if (this._options.bindChildren !== false) {
             this._bindValue(i, value);
         }
-        arguments[i] = value;
+        args.push(value);
     }
 
     Array.prototype.unshift.apply(this, arguments);
