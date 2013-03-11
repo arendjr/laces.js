@@ -15,7 +15,8 @@ carry significant overhead.
 Laces.js by contrast provides you with a Model, but nothing more. It provides
 you with the laces to tie your model to whatever View or Controller you prefer.
 It consists of about 700 lines of JavaScript code, including whitespace and
-comments. Optionally, you can add one or more add-ons for extra features.
+comments (7K minified). Optionally, you can add one or more add-ons for extra
+features.
 
 The project was created because I wanted a good model to use with an HTML5 map
 editor for a [game engine](https://github.com/arendjr/PlainText) I'm working on.
