@@ -2,7 +2,21 @@
 
 Laces.js provides the M in MVC, while you tie the rest.
 
+ * **[Rationale](#rationale)**
+ * **[Basic Usage](#basic-usage)**
+   * [Nested Properties](#nested-properties)
+   * [Maps and Arrays](#maps-and-arrays)
+   * [Custom Bindings and Templates](#custom-bindings-and-templates)
+   * [Events](#events)
+   * [Require.js Usage](#requirejs-usage)
+ * **[Add-ons](#add-ons)**
+   * [Laces.js Tie](#tie)
+   * [Laces.js Local](#local)
+ * **[Demo](#demo)**
+ * **[Compatibility](#compatibility)**
 
+
+<a id="rationale"></a>
 ## Rationale
 
 While there are plenty of MVC frameworks available for JavaScript, most of them
@@ -25,6 +39,7 @@ server communication, leaving me with little use for templating engines and XHR
 integration most other MVC frameworks provide.
 
 
+<a id="basic-usage"></a>
 ## Basic Usage
 
 Laces.js works as a model with automatic data binding. First, you create a
@@ -82,6 +97,7 @@ chained, so that a property that depends on fullName for example, also gets
 updated when firstName or lastName is modified.
 
 
+<a id="nested-properties"></a>
 ### Nested Properties
 
 It is also possible to use nested properties within your model. Example:
@@ -109,6 +125,7 @@ model.displayName; // "Anonymous"
 ```
 
 
+<a id="maps-and-arrays"></a>
 ### Maps and Arrays
 
 The properties of a Laces Model can contain more than just primitives. They also
@@ -179,6 +196,7 @@ mode.user.friends.bind("change", function(event) { console.log("Friends changed"
 Read on to the next section for more about bindings.
 
 
+<a id="custom-bindings-and-templates"></a>
 ### Custom Bindings and Templates
 
 You may be interested in binding a custom callback to whenever one of those
@@ -214,6 +232,7 @@ model.bind("change:fullName", function(event) { $(".full-name").text(event.value
 ```
 
 
+<a id="events"></a>
 ### Events
 
 As you saw above, Laces objects generate change events whenever something
@@ -263,6 +282,7 @@ were added, updated or removed).</td></tr>
 </table>
 
 
+<a id="requirejs-usage"></a>
 ### Require.js Usage
 
 If you want to use Laces.js with Require.js, you can do so easily. Example:
@@ -280,6 +300,7 @@ As you can see, the LacesModel type is now defined as the Model property on
 the Laces object. The same applies to the other Laces types.
 
 
+<a id="add-ons"></a>
 ## Add-ons
 
 <a id="tie"></a>
@@ -380,6 +401,7 @@ Any properties you set on the model will still be there when the page is
 reloaded.
 
 
+<a id="demo"></a>
 ## Demo
 
 There's a bunch of demos included in this repository, just check them out.
@@ -394,6 +416,7 @@ And there's even a variation on the TodoMVC example that uses
 [the Laces.js Tie and Laces.js Local add-ons](https://github.com/arendjr/todomvc/tree/gh-pages/labs/architecture-examples/laces_addons).
 
 
+<a id="compatibility"></a>
 ## Compatibility
 
 - Chrome 5+
