@@ -452,7 +452,7 @@ LacesModel.prototype.set = function(key, value, options) {
 
     options = options || {};
 
-    function reevalualate() {
+    function reevaluate() {
         self._reevaluate(key);
     }
 
