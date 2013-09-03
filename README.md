@@ -349,9 +349,9 @@ could thus also have been written like this:
 Note that bindings are only bi-directional for user-generated events. When an
 input element is bound to a model property, any changes made to the value of the
 element will be saved back into the model. The same is true for any element
-which has been editable through the data-laces-editable attribute. When it comes
-to checkboxes, the boolean checked property will also be saved back into the
-model when the checkbox is (un)checked. Other attributes, like
+which has been made editable through the data-laces-editable attribute. When it
+comes to checkboxes, the boolean checked property will also be saved back into
+the model when the checkbox is (un)checked. Other attributes, like
 data-laces-visible and data-laces-disabled, will cause the HTML elements to be
 updated automatically when the model is changed, but will not update the model
 when the elements are updated through script.
