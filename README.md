@@ -2,18 +2,18 @@
 
 Laces.js provides the M in MVC, while you tie the rest.
 
- * **[Rationale](#rationale)**
- * **[Basic Usage](#basic-usage)**
-   * [Nested Properties](#nested-properties)
-   * [Maps and Arrays](#maps-and-arrays)
-   * [Custom Bindings and Templates](#custom-bindings-and-templates)
-   * [Events](#events)
-   * [Require.js Usage](#requirejs-usage)
- * **[Add-ons](#add-ons)**
-   * [Laces.js Tie](#tie)
-   * [Laces.js Local](#local)
- * **[Demo](#demo)**
- * **[Compatibility](#compatibility)**
+ * **[Rationale](#lacesjs-rationale)**
+ * **[Basic Usage](#lacesjs-basic-usage)**
+   * [Nested Properties](#lacesjs-nested-properties)
+   * [Maps and Arrays](#lacesjs-maps-and-arrays)
+   * [Custom Bindings and Templates](#lacesjs-custom-bindings-and-templates)
+   * [Events](#lacesjs-events)
+   * [Require.js Usage](#lacesjs-requirejs-usage)
+ * **[Add-ons](#lacesjs-add-ons)**
+   * [Laces.js Tie](#lacesjs-tie)
+   * [Laces.js Local](#lacesjs-local)
+ * **[Demo](#lacesjs-demo)**
+ * **[Compatibility](#lacesjs-compatibility)**
 
 
 <a id="rationale"></a>
