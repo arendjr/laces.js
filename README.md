@@ -47,7 +47,7 @@ model:
 var model = new LacesModel();
 ```
 
-We can set properties using the set() method:
+You can set properties using the set() method:
 
 ```js
 model.set("firstName", "Arend");
