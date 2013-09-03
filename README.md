@@ -346,15 +346,17 @@ could thus also have been written like this:
 <span data-laces-property="someArray[{{index}}].name" data-laces-editable="true"></span>
 ```
 
-Note that bindings are only bi-directional for user-generated events. When an
-input element is bound to a model property, any changes made to the value of the
-element will be saved back into the model. The same is true for any element
-which has been made editable through the data-laces-editable attribute. When it
-comes to checkboxes, the boolean checked property will also be saved back into
-the model when the checkbox is (un)checked. Other attributes, like
-data-laces-visible and data-laces-disabled, will cause the HTML elements to be
-updated automatically when the model is changed, but will not update the model
-when the elements are updated through script.
+Once the fragment is inserted in the DOM, it maintains bi-directional bindings
+for user-generated events. This means the fragment will automatically update
+when the model is updated, but when an input element is bound to a model
+property, any changes made by the user to the value of the element will also be
+saved back into the model. The same is true for any element which has been made
+editable through the data-laces-editable attribute. When it comes to checkboxes,
+the boolean checked property will also be saved back into the model when the
+checkbox is (un)checked. Other attributes, like data-laces-visible and
+data-laces-disabled, will cause the elements to be updated automatically when
+the model is changed, but will not update the model when the elements are
+updated through script.
 
 Here is an overview of all the supported options:
 
