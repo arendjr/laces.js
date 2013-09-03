@@ -311,6 +311,10 @@ var tie = new LacesTie(model, template);
 someDomElement.appendChild(tie.render());
 ```
 
+The render() function returns a DocumentFragment which you can insert anywhere
+into the DOM. It is important you don't convert this fragment into a string
+before adding it to the DOM, as it would result in losing all live bindings.
+
 If the template iterates over an array or other list, you may want to rerender
 it when the list changes. In such case you can use something like the following
 instead of the last line from above:
@@ -342,7 +346,17 @@ could thus also have been written like this:
 <span data-laces-property="someArray[{{index}}].name" data-laces-editable="true"></span>
 ```
 
-Here is an overview of the supported optons:
+Note that bindings are only bi-directional for user-generated events. When an
+input element is bound to a model property, any changes made to the value of the
+element will be saved back into the model. The same is true for any element
+which has been editable through the data-laces-editable attribute. When it comes
+to checkboxes, the boolean checked property will also be saved back into the
+model when the checkbox is (un)checked. Other attributes, like
+data-laces-visible and data-laces-disabled, will cause the HTML elements to be
+updated automatically when the model is changed, but will not update the model
+when the elements are updated through script.
+
+Here is an overview of all the supported options:
 
 <table>
 <tr><td><em>Option</em></td><td><em>Value</em></td><td><em>Description</em></td></tr>
@@ -373,9 +387,20 @@ value evaluates to true, the disabled attribute will be set. Precede the
 reference with an exclamation mark (!) to reverse the evaluation.</td></tr>
 </table>
 
-Note that the render() function returns a DocumentFragment. You should not
-convert this fragment into a string before adding it to the DOM, as you would
-lose any live bindings.
+Finally, the LacesTie constructor also takes an optional options argument. It
+supports the following options:
+
+<table>
+<tr><td><em>Option</em></td><td><em>Default</em></td><td><em>Description</em></td></tr>
+<tr><td><b>editEvent</b></td><td>"dblclick"</td><td>The event used to trigger
+editing of a non-input element marked with data-laces-editable.</td></tr>
+<tr><td><b>saveEvent</b></td><td>"change"</td><td>The event used to trigger
+the saving of an element's value back to the model.</td></tr>
+<tr><td><b>saveOnEnter</b></td><td>true</td><td>Whether an element's value
+should be saved back to the model when Enter is pressed.</td></tr>
+<tr><td><b>saveOnBlur</b></td><td>true</td><td>Whether an element's value should
+be saved back to the model when the element is blurred.</td></tr>
+</table>
 
 
 ### Laces.js Local
