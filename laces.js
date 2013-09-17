@@ -70,7 +70,11 @@ LacesObject.prototype.fire = function(eventName, event) {
     if (eventName.indexOf(" ") > -1) {
         var eventNames = eventName.split(" ");
         for (length = eventNames.length; i < length; i++) {
-            this.fire(eventNames[i], event);
+            var clone = {};
+            for (var key in event) {
+                clone[key] = event[key];
+            }
+            this.fire(eventNames[i], clone);
         }
     } else {
         event = event || {};
@@ -501,13 +505,19 @@ LacesModel.prototype._reevaluate = function(key) {
 //   default bracket notation. This assures the proper change events get
 //   generated.
 //
+// array - Optional array containing initial elements.
 // options - Optional options object. This may contain the following properties:
 //           bindChildren - If set to false, no bindings will be created between
 //                          change events for properties and the change event of
 //                          this array.
-function LacesArray(options) {
+function LacesArray(array, options) {
 
-    var array = [];
+    if (array instanceof Array) {
+        options = options || {};
+    } else {
+        options = array;
+        array = [];
+    } 
     for (var method in LacesArray.prototype) {
         Object.defineProperty(array, method, {
             "value": LacesArray.prototype[method],
@@ -515,6 +525,13 @@ function LacesArray(options) {
         });
     }
     LacesObject.call(array, options);
+    for (var i = 0, length = array.length; i < length; i++) {
+        var value = this.wrap(array[i]);
+        if (options.bindChildren !== false) {
+            this._bindValue(i, value);
+        }
+        array[i] = value;
+    }
     return array;
 }
 
