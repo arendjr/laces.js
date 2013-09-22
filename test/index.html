@@ -11,6 +11,8 @@
     <script>mocha.setup('bdd')</script>
     <!-- assertion framework -->
     <script src="lib/chai.js"></script>
+    <script src="/node_modules/jquery-untouched/lib/jquery.js"></script>
+    <script src="/node_modules/chai-jquery/chai-jquery.js"></script>
     <script>var expect = chai.expect</script>
     <script>var assert = chai.assert</script>
 
@@ -19,7 +21,8 @@
     <script src="../laces.tie.js"></script>
 
     <!-- include spec files here... -->
-    <script src="spec/test.js"></script>
+    <script src="spec/laces.js"></script>
+    <script src="spec/tie.js"></script>
 
     <script>mocha.run()</script>
 </body>
