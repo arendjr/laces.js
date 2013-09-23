@@ -14,6 +14,7 @@ Laces.js provides the M in MVC, while you tie the rest.
    * [Laces.js Local](#lacesjs-local)
  * **[Demo](#demo)**
  * **[Compatibility](#compatibility)**
+ * **[Tests](#tests)**
 
 
 ## Rationale
@@ -440,15 +441,11 @@ And there's even a variation on the TodoMVC example that uses
 - Safari 5+
 - Opera 11.60+
 
-## How to run tests
+
+## Tests
 
 After checkout, install dependencies with:
 ```
 $ npm install
 ```
-Then run the server with
-```
-$ ./node_modules/.bin/serve
-```
-And hit `http://localhost:3000/test/index.html` with your browser
-
+Then open tests/index.html in the browser.
