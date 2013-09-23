@@ -13,8 +13,8 @@ Laces.js provides the M in MVC, while you tie the rest.
    * [Laces.js Tie](#lacesjs-tie)
    * [Laces.js Local](#lacesjs-local)
  * **[Demo](#demo)**
- * **[Compatibility](#compatibility)**
  * **[Tests](#tests)**
+ * **[Compatibility](#compatibility)**
 
 
 ## Rationale
@@ -433,6 +433,15 @@ And there's even a variation on the TodoMVC example that uses
 [the Laces.js Tie and Laces.js Local add-ons](https://github.com/arendjr/todomvc/tree/gh-pages/labs/architecture-examples/laces_addons).
 
 
+## Tests
+
+After checkout, install dependencies with:
+```
+$ npm install
+```
+Then open test/index.html in the browser.
+
+
 ## Compatibility
 
 - Chrome 5+
@@ -440,12 +449,3 @@ And there's even a variation on the TodoMVC example that uses
 - Firefox 4+
 - Safari 5+
 - Opera 11.60+
-
-
-## Tests
-
-After checkout, install dependencies with:
-```
-$ npm install
-```
-Then open tests/index.html in the browser.
