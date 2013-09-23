@@ -439,3 +439,16 @@ And there's even a variation on the TodoMVC example that uses
 - Firefox 4+
 - Safari 5+
 - Opera 11.60+
+
+## How to run tests
+
+After checkout, install dependencies with:
+```
+$ npm install
+```
+Then run the server with
+```
+$ ./node_modules/.bin/serve
+```
+And hit `http://localhost:3000/test/index.html` with your browser
+
