@@ -1,1 +1,8 @@
 node_modules/
+
+# Qt Creator IDE files
+Laces.js*.config
+Laces.js*.creator
+Laces.js*.creator.user
+Laces.js*.files
+Laces.js*.includes
