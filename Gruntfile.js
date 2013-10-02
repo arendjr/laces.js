@@ -4,7 +4,18 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON("package.json"),
 
         jshint: {
-            all: ["Gruntfile.js", "laces.js", "laces.local.js", "laces.tie.js"]
+            main: [
+                "Gruntfile.js",
+                "laces.js",
+                "laces.local.js",
+                "laces.tie.js"
+            ],
+            test: {
+                options: {
+                    predef: ["describe", "it"]
+                },
+                src: [ "test/spec/*.js" ]
+            }
         },
 
         uglify: {

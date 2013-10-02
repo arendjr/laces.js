@@ -8,7 +8,8 @@
 <body>
     <div id="mocha"></div>
     <script src="lib/mocha/mocha.js"></script>
-    <script>mocha.setup('bdd')</script>
+    <script>mocha.setup("bdd");</script>
+
     <!-- assertion framework -->
     <script src="lib/chai.js"></script>
     <script src="../node_modules/jquery-untouched/lib/jquery.js"></script>
@@ -21,9 +22,18 @@
     <script src="../laces.tie.js"></script>
 
     <!-- include spec files here... -->
-    <script src="spec/laces.js"></script>
+    <script src="spec/array.js"></script>
+    <script src="spec/computed-properties.js"></script>
     <script src="spec/tie.js"></script>
 
-    <script>mocha.run()</script>
+    <script>
+        if (window.$) {
+            mocha.run();
+        } else {
+            var el = document.getElementById("mocha");
+            el.style.fontWeight = "bold";
+            el.textContent = "jQuery not loaded. Run npm install first.";
+        }
+    </script>
 </body>
 </html>
