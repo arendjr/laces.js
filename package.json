@@ -1,6 +1,22 @@
 {
   "name": "laces.js",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "description": "Provides the M in MVC, while you tie the rest.",
+  "homepage": "https://github.com/arendjr/laces.js",
+  "license": "MIT",
+  "main": "laces.js",
+  "keywords": [
+    "amd",
+    "browser",
+    "client",
+    "server"
+  ],
+  "bugs": {
+    "url": "https://github.com/arendjr/laces.js/issues"
+  },
+  "engines": {
+    "node": ">= 0.8.0"
+  },
   "devDependencies": {
     "grunt": "~0.4.0",
     "grunt-contrib-uglify": "~0.1.2",
