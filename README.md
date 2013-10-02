@@ -8,7 +8,7 @@ Laces.js provides the M in MVC, while you tie the rest.
    * [Maps and Arrays](#maps-and-arrays)
    * [Custom Bindings and Templates](#custom-bindings-and-templates)
    * [Events](#events)
-   * [Require.js Usage](#requirejs-usage)
+   * [Usage with Node.js or Require.js](#usage-with-nodejs-or-requirejs)
  * **[Add-ons](#add-ons)**
    * [Laces.js Tie](#lacesjs-tie)
    * [Laces.js Local](#lacesjs-local)
@@ -277,9 +277,29 @@ were added, updated or removed).</td></tr>
 </table>
 
 
-### Require.js Usage
+### Usage with Node.js or Require.js
 
-If you want to use Laces.js with Require.js, you can do so easily. Example:
+If you want to use Laces.js with Node.js or Require.js, you can do so easily.
+Just import the module as you would expect. The module will have Model, Map and
+Array properties defined on it.
+
+Example with Node.js:
+
+```js
+var Laces = require("laces.js");
+var model = new Laces.Model({
+    firstName: "Arend",
+    lastName: "van Beelen"
+});
+```
+
+The Laces.js package for Node.js can be installed with npm:
+
+```bash
+$ npm install laces.js
+```
+
+Example with Require.js:
 
 ```js
 require(["laces"], function(Laces) {
@@ -289,9 +309,6 @@ require(["laces"], function(Laces) {
      });
 });
 ```
-
-As you can see, the LacesModel type is now defined as the Model property on
-the Laces object. The same applies to the other Laces types.
 
 
 ## Add-ons
