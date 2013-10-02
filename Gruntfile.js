@@ -14,7 +14,7 @@ module.exports = function(grunt) {
                 options: {
                     predef: ["describe", "it"]
                 },
-                src: [ "test/spec/*.js" ]
+                src: ["test/spec/*.js"]
             }
         },
 

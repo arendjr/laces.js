@@ -2,7 +2,7 @@
 
     "use strict";
 
-    describe("laces array models", function () {
+    describe("laces array", function () {
 
         /* global LacesArray */
 
