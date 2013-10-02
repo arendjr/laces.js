@@ -1,4 +1,4 @@
-(function(window) {
+(function(root) {
 
 "use strict";
 
@@ -703,16 +703,22 @@ LacesArray.prototype.unshift = function() {
 };
 
 
-if (typeof define === 'function' && define.amd) {
-    define({
-        "Model": LacesModel,
-        "Map": LacesMap,
-        "Array": LacesArray
-    });
+var exportMap = { Model: LacesModel, Map: LacesMap, Array: LacesArray };
+
+if (typeof exports === "object" && exports &&
+    typeof module === "object" && module && module.exports === exports) {
+    // Node.js
+    module.exports = exportMap;
+} else if (typeof define === "function" && define.amd) {
+    // AMD (Require.js)
+    define(exportMap);
 } else {
-    window.LacesModel = LacesModel;
-    window.LacesMap = LacesMap;
-    window.LacesArray = LacesArray;
+    // plain browser
+    for (var key in exportMap) {
+        if (exportMap.hasOwnProperty(key)) {
+            root["Laces" + key] = exportMap[key];
+        }
+    }
 }
 
 })(this);
