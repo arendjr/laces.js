@@ -274,6 +274,8 @@ properties:
 etc..)</td></tr>
 <tr><td><b>elements</b></td><td>Array of affected elements (those that
 were added, updated or removed).</td></tr>
+<tr><td><b>index</b></td><td>Index of the first added, changed or removed
+element.</td></tr>
 </table>
 
 

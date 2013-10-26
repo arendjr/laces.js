@@ -556,7 +556,7 @@ LacesArray.prototype.pop = function() {
     if (this._options.bindChildren !== false) {
         this._unbindValue(value);
     }
-    this.fire("remove change", { "elements": [value] });
+    this.fire("remove change", { "elements": [value], "index": this.length });
     return value;
 };
 
@@ -564,7 +564,7 @@ LacesArray.prototype.pop = function() {
 // of the array.
 LacesArray.prototype.push = function() {
 
-    var elements = [];
+    var elements = [], index = this.length;
     for (var i = 0, length = arguments.length; i < length; i++) {
         var value = this.wrap(arguments[i]);
         if (this._options.bindChildren !== false) {
@@ -575,13 +575,13 @@ LacesArray.prototype.push = function() {
 
     Array.prototype.push.apply(this, elements);
 
-    this.fire("add change", { "elements": elements });
+    this.fire("add change", { "elements": elements, "index": index });
 };
 
 // Remove the element at the specified index.
 //
-// This method is provided for consistency. It behaves the same as
-// Array.splice(index, 1), but does not return anything.
+// This method is provided for consistency with Laces Map. It behaves the same
+// as Array.splice(index, 1), but does not return anything.
 //
 // index - Index of the element to remove.
 LacesArray.prototype.remove = function(index) {
@@ -592,7 +592,7 @@ LacesArray.prototype.remove = function(index) {
             this._unbindValue(removedElement);
         }
         Array.prototype.splice.call(this, index, 1);
-        this.fire("remove change", { "elements": [removedElement] });
+        this.fire("remove change", { "elements": [removedElement], "index": index });
     }
 };
 
@@ -624,11 +624,8 @@ LacesArray.prototype.set = function(index, value) {
         this._bindValue(index, value);
     }
 
-    if (newProperty) {
-        this.fire("add change", { "elements": [value] });
-    } else {
-        this.fire("update change", { "elements": [value] });
-    }
+    var event = { "elements": [value], "index": index };
+    this.fire((newProperty ? "add" : "update") + " change", event);
 };
 
 // Remove the first element from the array and return that element. This method
@@ -639,7 +636,7 @@ LacesArray.prototype.shift = function() {
     if (this._options.bindChildren !== false) {
         this._unbindValue(value);
     }
-    this.fire("remove change", { "elements": [value] });
+    this.fire("remove change", { "elements": [value], "index": 0 });
     return value;
 };
 
@@ -647,7 +644,7 @@ LacesArray.prototype.shift = function() {
 LacesArray.prototype.sort = function() {
 
     Array.prototype.sort.call(this);
-    this.fire("change", { "elements": [] });
+    this.fire("change", { "elements": [], "index": 0 });
 
     return this;
 };
@@ -668,7 +665,7 @@ LacesArray.prototype.splice = function(index, howMany) {
                 this._unbindValue(removedElements[i]);
             }
         }
-        this.fire("remove change", { "elements": removedElements });
+        this.fire("remove change", { "elements": removedElements, "index": index });
     }
     if (addedElements.length > 0) {
         if (this._options.bindChildren !== false) {
@@ -676,7 +673,7 @@ LacesArray.prototype.splice = function(index, howMany) {
                 this._bindValue(index + i, addedElements[j]);
             }
         }
-        this.fire("add change", { "elements": addedElements });
+        this.fire("add change", { "elements": addedElements, "index": index });
     }
 
     return removedElements;
@@ -697,7 +694,7 @@ LacesArray.prototype.unshift = function() {
 
     Array.prototype.unshift.apply(this, arguments);
 
-    this.fire("add change", { "elements": arguments });
+    this.fire("add change", { "elements": arguments, "index": 0 });
 
     return this.length;
 };

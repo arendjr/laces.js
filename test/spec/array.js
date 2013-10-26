@@ -22,6 +22,7 @@
 
             assert.deepEqual(event, {
                 elements: [4],
+                index: 3,
                 name: "add"
             });
         });
@@ -34,6 +35,7 @@
 
             assert.deepEqual(event, {
                 elements: [3],
+                index: 2,
                 name: "remove"
             });
         });
