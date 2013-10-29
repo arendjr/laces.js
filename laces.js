@@ -27,7 +27,7 @@ function LacesObject(options) {
 //           true, the listener will be invoked immediately. Beware that unless
 //           eventName specifies a specific property, the event object will be
 //           completely empty the first time.
-LacesObject.prototype.bind = function(eventName, listener, options) {
+LacesObject.prototype.on = LacesObject.prototype.bind = function(eventName, listener, options) {
 
     options = options || {};
 
@@ -162,7 +162,7 @@ LacesObject.prototype.discardHeldEvents = function() {
 // eventName - Name of the event to which the listener was bound. If omitted,
 //             the listener will be unbound from all event types.
 // listener - Callback function to unbind.
-LacesObject.prototype.unbind = function(eventName, listener) {
+LacesObject.prototype.off = LacesObject.prototype.unbind = function(eventName, listener) {
 
     if (typeof eventName === "function") {
         var removed = false;

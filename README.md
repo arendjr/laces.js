@@ -227,6 +227,9 @@ can save you from some code duplication:
 model.bind("change:fullName", function(event) { $(".full-name").text(event.value); }, { initialFire: true });
 ```
 
+Note that you can bind and unbind events using the bind()/unbind() methods as
+well as the on()/off() methods to match the style you prefer. 
+
 
 ### Events
 
