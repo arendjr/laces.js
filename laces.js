@@ -285,6 +285,12 @@ LacesMap.prototype.get = function(key) {
     return this._values[key];
 };
 
+// Return the keys of all set properties.
+LacesMap.prototype.keys = function() {
+
+    return Object.keys(this._values);
+};
+
 // Remove a property.
 //
 // key - Key of the property to remove.
