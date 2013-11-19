@@ -410,7 +410,7 @@ LacesMap.prototype._setValue = function(key, value) {
 
 // Laces Model constructor.
 //
-// Laces models behave the same as Laces maps, with two exception: When a
+// Laces models behave the same as Laces maps, with two exceptions: When a
 // property is assigned a function as its value, the return value of the
 // function is used as value for the property. We call this a computed property.
 // If the computed property references other properties of the model, the value
@@ -439,7 +439,8 @@ LacesMap.prototype._setValue = function(key, value) {
 //       "dependencies": ["firstName", "lastName", "fullName"]
 //   });
 //
-// Finally, models support "change:<propertyName>" events, which maps don't.
+// Finally, models also differ by supporting "change:<propertyName>" events,
+// which maps don't.
 //
 // object - Optional object to initialize the model with. Properties will be
 //          initialized for all key/value pairs of the object using the set()
@@ -467,7 +468,7 @@ LacesModel.prototype.set = function(key, value, options) {
     }
 
     if (typeof value === "function") {
-        var dependencies = options.dependencies || [];
+        var dependencies = (options.dependencies ? options.dependencies.slice(0) : []);
 
         this._functions[key] = value;
 
