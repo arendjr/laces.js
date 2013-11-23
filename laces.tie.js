@@ -241,10 +241,10 @@ function LacesTie(model, template, options) {
 
     function parse(html) {
         var fragment = document.createDocumentFragment();
-        var div = document.createElement("div");
-        div.innerHTML = html;
-        while (div.firstChild) {
-            var child = div.firstChild;
+        var container = document.createElement(html.match(/^<tr[\s>]/) ? "tbody" : "div");
+        container.innerHTML = html;
+        while (container.firstChild) {
+            var child = container.firstChild;
             process(child);
             fragment.appendChild(child);
         }
