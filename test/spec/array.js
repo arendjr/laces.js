@@ -39,5 +39,18 @@
                 name: "remove"
             });
         });
+
+        it("supports map elements", function() {
+            array.bind("add", storeEvent);
+            array.push(new LacesMap({ a: 1, b: 2 }));
+
+            assert.deepEqual(array, [1, 2, 3, { a: 1, b: 2 }]);
+
+            assert.deepEqual(event, {
+                elements: [{ a: 1, b: 2 }],
+                index: 3,
+                name: "add"
+            });
+        });
     });
 })();
