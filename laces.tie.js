@@ -130,7 +130,7 @@ function LacesTie(model, template, options) {
                 ref.parent.bind("change", binding);
             }
 
-            if (node.tagName === "INPUT") {
+            if (node.tagName === "INPUT" || node.tagName === "TEXTAREA") {
                 node.addEventListener(saveEvent, function() {
                     var newRef = reference(lacesProperty);
                     newRef.parent[newRef.propertyName] = (node.getAttribute("type") === "checkbox" ?
