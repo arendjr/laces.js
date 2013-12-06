@@ -362,8 +362,9 @@ An actual template might look something like this (using Hogan.js as example):
 ```
 
 Options can be specified using a single mapping with the data-laces
-attribute, or with separate data-laces-* attributes. The above span element
-could thus also have been written like this:
+attribute, or with separate data-laces-* attributes (though you should not mix
+the two methods within a single element). The above span element could thus also
+have been written like this:
 
 ```html
 <span data-laces-property="someArray[{{index}}].name" data-laces-editable="true"></span>
@@ -398,19 +399,62 @@ replaced by an input element on double-click (by default).</td></tr>
 property referenced by the property option is not set. If not given, an empty
 string would be used (or the number 0 for an input element with a number
 type).</td></tr>
-<tr><td><b>visible</b></td><td>property reference</td><td>Reference to the
-property that will determine the visibility of the element. If the property
-value evaluates to false, the display style will be set to none. Precede the
-reference with an exclamation mark (!) to reverse the evaluation.</td></tr>
-<tr><td><b>checked</b></td><td>property reference</td><td>Reference to the
-property that will determine whether the element is checked. If the property
-value evaluates to true, the checked attribute will be set. Precede the
-reference with an exclamation mark (!) to reverse the evaluation.</td></tr>
-<tr><td><b>disabled</b></td><td>property reference</td><td>Reference to the
-property that will determine whether the element is disabled. If the property
-value evaluates to true, the disabled attribute will be set. Precede the
-reference with an exclamation mark (!) to reverse the evaluation.</td></tr>
+<tr><td><b>target</b></td><td>string</td><td>The target to which the binding
+should be applied. By default, this is "checked" for checkboxes, "value" for
+other input elements, and "text" for all other elements. See the next table for
+an overview of the possible values.</td></tr>
+<tr><td><b>visible</b></td><td>property reference</td><td>This option provides
+a shortcut for specifying a property with the target "visible". The value is a
+reference to the property that will determine the visibility of the element. If
+the property value evaluates to false, the display style will be set to none.
+Precede the reference with an exclamation mark (!) to reverse the evaluation.
+</td></tr>
+<tr><td><b>checked</b></td><td>property reference</td><td>This option provides
+a shortcut for specifying a property with the target "checked". The value is a
+reference to the property that will determine whether the element is checked. If
+the property value evaluates to true, the checked attribute will be set. Precede
+the reference with an exclamation mark (!) to reverse the evaluation.</td></tr>
+<tr><td><b>class</b></td><td>property reference</td><td>This option provides
+a shortcut for specifying a property with the target "class". The value is a
+reference to the property that will be added as a CSS class.</td></tr>
+<tr><td><b>disabled</b></td><td>property reference</td><td>This option provides
+a shortcut for specifying a property with the target "disabled". The value is a
+reference to the property that will determine whether the element is disabled.
+If the property value evaluates to true, the disabled attribute will be set.
+Precede the reference with an exclamation mark (!) to reverse the evaluation.
+</td></tr>
 </table>
+
+As evidenced by the target option above, bindings have a specific target which
+determines in what way they affect the bound element.
+
+<table>
+<tr><td><em>Target</em></td><td><em>Description</em></td></tr>
+<tr><td><b>"text"</b></td><td>The text content of the element reflects the value
+of the property.</td></tr>
+<tr><td><b>"value"</b></td><td>The value attribute of the element reflects the
+value of the property.</td></tr>
+<tr><td><b>"checked"</b></td><td>The checked attribute will be set when the
+property's value evaluates to true, and unset otherwise.</td></tr>
+<tr><td><b>"disabled"</b></td><td>The disabled attribute will be set when the
+property's value evaluates to true, and unset otherwise.</td></tr>
+<tr><td><b>"visible"</b></td><td>The CSS property display will be set to "none"
+when the property's value evaluates to false, and be unset otherwise."</td></tr>
+<tr><td><b>"class"</b></td><td>The property's value is interpreted as a CSS
+class which is added to the element.</td></tr>
+</table>
+
+If you want to apply multiple bindings to a single element, you can do so by
+specifying the bindings in square brackets, and separated by commas. This is
+only possible in the data-laces attribute. Examples:
+
+```html
+<span data-laces="[ text: someArray[{{index}}].name, class: someArray[{{index}}].class ]"></span>
+```
+
+```html
+<span data-laces="[{ text: someArray[{{index}}].name, editable: true }, { class: someArray[{{index}}].class }]"></span>
+```
 
 Finally, the LacesTie constructor also takes an optional options argument. It
 supports the following options:
