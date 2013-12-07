@@ -400,7 +400,8 @@ commas. Here is an overview of all the supported keys:
     <td><b>disabled</b></td>
     <td>property reference</td>
     <td>The disabled attribute will be set when the property's value evaluates
-        to true, and unset otherwise.</td>
+        to true, and unset otherwise. Prefix the property reference with a ! to
+        reverse the evaluation.</td>
 </tr>
 <tr>
     <td><b>radio</b></td>
@@ -414,7 +415,8 @@ commas. Here is an overview of all the supported keys:
     <td><b>visible</b></td>
     <td>property reference</td>
     <td>The CSS display property will be set to "none" when the property's value
-        evaluates to false, and be unset otherwise."</td>
+        evaluates to false, and be unset otherwise. Prefix the property
+        reference with a ! to reverse the evaluation.</td>
 </tr>
 <tr>
     <td><b>class</b></td>
@@ -432,9 +434,9 @@ commas. Here is an overview of all the supported keys:
 <tr>
     <td><b>default</b></td>
     <td>any value</td>
-    <td>Default value to use if the property referenced by the text or value key
-        is not set. If not given, an empty string would be used (or the number 0
-        for an input element with a number type).</td>
+    <td>Default value to use if the property referenced by the text, value or
+        radio key is not set. If not given, an empty string would be used (or
+        the number 0 for an input element with a number type).</td>
 </tr>
 </table>
 
@@ -481,7 +483,7 @@ supports the following options:
 
 #### Changelog
 
-*Saturday, December 7, 2013*: The Tie add-on has been heavily rewritten,
+**Saturday, December 7, 2013**: The Tie add-on has been heavily rewritten,
 breaking backwards compatibility. Instead of various data-laces-* attributes,
 the add-on now expects a single data-tie attribute. This update also adds
 support for binding radio buttons and CSS classes. For more information, please
@@ -504,14 +506,16 @@ reloaded.
 
 There's a bunch of demos included in this repository, just check them out.
 
-For a real-world example, see the PlainText
-[map model](https://github.com/arendjr/PlainText/blob/master/web/mapmodel/model.js).
+For real-world examples, check out these projects:
+
+* [C.I. Joe](https://github.com/arendjr/CI-Joe/)
+* [PlainText](https://github.com/arendjr/PlainText/)
 
 You might also be interested in the
 [TodoMVC example using Laces.js](https://github.com/arendjr/todomvc/tree/gh-pages/labs/architecture-examples/lacesjs).
 
-And there's even a variation on the TodoMVC example that uses
-[the Laces.js Tie and Laces.js Local add-ons](https://github.com/arendjr/todomvc/tree/gh-pages/labs/architecture-examples/laces_addons).
+And there's even a variation on the TodoMVC example that
+[uses the Laces.js Tie and Laces.js Local add-ons](https://github.com/arendjr/todomvc/tree/gh-pages/labs/architecture-examples/laces_addons).
 
 
 ## Tests
