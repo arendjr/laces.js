@@ -341,7 +341,7 @@ before adding it to the DOM, as it would result in losing all live bindings.
 If the template iterates over an array or other list, you may want to rerender
 it when the list changes. In such case you can use something like the following
 instead of the last line from above:
-
+target
 ```js
 model.someArray.bind("add remove", function() {
      someDomElement.innerHTML = "";
@@ -355,122 +355,137 @@ An actual template might look something like this (using Hogan.js as example):
 <ul>
      {{#someArray}}
      <li>
-          <span data-laces="{ property: someArray[{{index}}].name, editable: true }"></span>
+          <span data-tie="text: someArray[{{index}}].name, editable: true"></span>
      </li>
      {{/someArray}}
 </ul>
-```
-
-Options can be specified using a single mapping with the data-laces
-attribute, or with separate data-laces-* attributes (though you should not mix
-the two methods within a single element). The above span element could thus also
-have been written like this:
-
-```html
-<span data-laces-property="someArray[{{index}}].name" data-laces-editable="true"></span>
 ```
 
 Once the fragment is inserted in the DOM, it maintains bi-directional bindings
 for user-generated events. This means the fragment will automatically update
 when the model is updated, but when an input element is bound to a model
 property, any changes made by the user to the value of the element will also be
-saved back into the model. The same is true for any element which has been made
-editable through the data-laces-editable attribute. When it comes to checkboxes,
-the boolean checked property will also be saved back into the model when the
-checkbox is (un)checked. Other attributes, like data-laces-visible and
-data-laces-disabled, will cause the elements to be updated automatically when
-the model is changed, but will not update the model when the elements are
-updated through script.
+saved back into the model.
 
-Here is an overview of all the supported options:
+The data-tie attribute may contain multiple key-value pairs, separated by
+commas. Here is an overview of all the supported keys:
 
 <table>
-<tr><td><em>Option</em></td><td><em>Value</em></td><td><em>Description</em></td></tr>
-<tr><td><b>property</b></td><td>property reference</td><td>Reference to the
-property whose value will be used for the content of the element. The content
-will automatically be updated if the property value changes. If the element is
-an input element, the property value will be the input's value and if the
-value of the input changes, the change will be written back to the
-model.</td></tr>
-<tr><td><b>editable</b></td><td>true | false</td><td>If a property is tied to
-a non-input element, use this option to make it editable. The element will be
-replaced by an input element on double-click (by default).</td></tr>
-<tr><td><b>default</b></td><td>any value</td><td>Default value to use if the
-property referenced by the property option is not set. If not given, an empty
-string would be used (or the number 0 for an input element with a number
-type).</td></tr>
-<tr><td><b>target</b></td><td>string</td><td>The target to which the binding
-should be applied. By default, this is "checked" for checkboxes, "value" for
-other input elements, and "text" for all other elements. See the next table for
-an overview of the possible values.</td></tr>
-<tr><td><b>visible</b></td><td>property reference</td><td>This option provides
-a shortcut for specifying a property with the target "visible". The value is a
-reference to the property that will determine the visibility of the element. If
-the property value evaluates to false, the display style will be set to none.
-Precede the reference with an exclamation mark (!) to reverse the evaluation.
-</td></tr>
-<tr><td><b>checked</b></td><td>property reference</td><td>This option provides
-a shortcut for specifying a property with the target "checked". The value is a
-reference to the property that will determine whether the element is checked. If
-the property value evaluates to true, the checked attribute will be set. Precede
-the reference with an exclamation mark (!) to reverse the evaluation.</td></tr>
-<tr><td><b>class</b></td><td>property reference</td><td>This option provides
-a shortcut for specifying a property with the target "class". The value is a
-reference to the property that will be added as a CSS class.</td></tr>
-<tr><td><b>disabled</b></td><td>property reference</td><td>This option provides
-a shortcut for specifying a property with the target "disabled". The value is a
-reference to the property that will determine whether the element is disabled.
-If the property value evaluates to true, the disabled attribute will be set.
-Precede the reference with an exclamation mark (!) to reverse the evaluation.
-</td></tr>
+<tr>
+    <td><em>Key</em></td>
+    <td><em>Value</em></td>
+    <td><em>Description</em></td>
+</tr>
+<tr>
+    <td><b>text</b></td>
+    <td>property reference</td>
+    <td>The text content of the element will reflect the value of the
+        property.</td>
+</tr>
+<tr>
+    <td><b>value</b></td>
+    <td>property reference</td>
+    <td>The value attribute of the element will reflect the value of the
+        property. User-generated changes to the value attribute will be save
+        back to the property.</td>
+</tr>
+<tr>
+    <td><b>checked</b></td>
+    <td>property reference</td>
+    <td>The checked attribute will be set when the property's value evaluates
+        to true, and unset otherwise. If the user changes the checked state of
+        the element, this will be reflect in the property's value.</td>
+</tr>
+<tr>
+    <td><b>disabled</b></td>
+    <td>property reference</td>
+    <td>The disabled attribute will be set when the property's value evaluates
+        to true, and unset otherwise.</td>
+</tr>
+<tr>
+    <td><b>radio</b></td>
+    <td>property reference</td>
+    <td>The value of the property is reflected on the radio input children of
+        the element. The child whose name matches the property's value is
+        selected and when the selection changes the property's value is set to
+        the name of the newly selected radio input.</td>
+</tr>
+<tr>
+    <td><b>visible</b></td>
+    <td>property reference</td>
+    <td>The CSS display property will be set to "none" when the property's value
+        evaluates to false, and be unset otherwise."</td>
+</tr>
+<tr>
+    <td><b>class</b></td>
+    <td>property reference</td>
+    <td>The property's value is interpreted as a CSS class which is added to the
+        element.</td>
+</tr>
+<tr>
+    <td><b>editable</b></td>
+    <td>true | false</td>
+    <td>Use this property to make an element whose text is tied to a property
+        value editable. This will cause the element to be replaced by an input
+        element on double-click (by default).</td>
+</tr>
+<tr>
+    <td><b>default</b></td>
+    <td>any value</td>
+    <td>Default value to use if the property referenced by the text or value key
+        is not set. If not given, an empty string would be used (or the number 0
+        for an input element with a number type).</td>
+</tr>
 </table>
 
-As evidenced by the target option above, bindings have a specific target which
-determines in what way they affect the bound element.
-
-<table>
-<tr><td><em>Target</em></td><td><em>Description</em></td></tr>
-<tr><td><b>"text"</b></td><td>The text content of the element reflects the value
-of the property.</td></tr>
-<tr><td><b>"value"</b></td><td>The value attribute of the element reflects the
-value of the property.</td></tr>
-<tr><td><b>"checked"</b></td><td>The checked attribute will be set when the
-property's value evaluates to true, and unset otherwise.</td></tr>
-<tr><td><b>"disabled"</b></td><td>The disabled attribute will be set when the
-property's value evaluates to true, and unset otherwise.</td></tr>
-<tr><td><b>"visible"</b></td><td>The CSS property display will be set to "none"
-when the property's value evaluates to false, and be unset otherwise."</td></tr>
-<tr><td><b>"class"</b></td><td>The property's value is interpreted as a CSS
-class which is added to the element.</td></tr>
-</table>
-
-If you want to apply multiple bindings to a single element, you can do so by
-specifying the bindings in square brackets, and separated by commas. This is
-only possible in the data-laces attribute. Examples:
+You can combine multiple ties in a single element. Example:
 
 ```html
-<span data-laces="[ text: someArray[{{index}}].name, class: someArray[{{index}}].class ]"></span>
-```
-
-```html
-<span data-laces="[{ text: someArray[{{index}}].name, editable: true }, { class: someArray[{{index}}].class }]"></span>
+<span data-tie="text: someArray[{{index}}].name, class: someArray[{{index}}].class"></span>
 ```
 
 Finally, the LacesTie constructor also takes an optional options argument. It
 supports the following options:
 
 <table>
-<tr><td><em>Option</em></td><td><em>Default</em></td><td><em>Description</em></td></tr>
-<tr><td><b>editEvent</b></td><td>"dblclick"</td><td>The event used to trigger
-editing of a non-input element marked with data-laces-editable.</td></tr>
-<tr><td><b>saveEvent</b></td><td>"change"</td><td>The event used to trigger
-the saving of an element's value back to the model.</td></tr>
-<tr><td><b>saveOnEnter</b></td><td>true</td><td>Whether an element's value
-should be saved back to the model when Enter is pressed.</td></tr>
-<tr><td><b>saveOnBlur</b></td><td>true</td><td>Whether an element's value should
-be saved back to the model when the element is blurred.</td></tr>
+<tr>
+    <td><em>Option</em></td>
+    <td><em>Default</em></td>
+    <td><em>Description</em></td>
+</tr>
+<tr>
+    <td><b>editEvent</b></td>
+    <td>"dblclick"</td>
+    <td>The event used to trigger editing of a non-input element marked with the
+        editable key.</td>
+</tr>
+<tr>
+    <td><b>saveEvent</b></td>
+    <td>"change"</td>
+    <td>The event used to trigger the saving of an element's value back to the
+        model.</td>
+</tr>
+<tr>
+    <td><b>saveOnEnter</b></td>
+    <td>true</td>
+    <td>Whether an element's value should be saved back to the model when Enter
+        is pressed.</td>
+</tr>
+<tr>
+    <td><b>saveOnBlur</b></td>
+    <td>true</td>
+    <td>Whether an element's value should be saved back to the model when the
+        element is blurred.</td>
+</tr>
 </table>
 
+#### Changelog
+
+*Saturday, December 7, 2013*: The Tie add-on has been heavily rewritten,
+breaking backwards compatibility. Instead of various data-laces-* attributes,
+the add-on now expects a single data-tie attribute. This update also adds
+support for binding radio buttons and CSS classes. For more information, please
+read the documentation above.
 
 ### Laces.js Local
 

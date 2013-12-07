@@ -20,11 +20,16 @@
                     }
                 }
                 return array;
-            }
+            },
+            checked: true,
+            checkedLabel: function() { return this.checked ? "checked" : "unchecked"; },
+            pet: "dog"
         });
 
         var template = Hogan.compile(
-            '<p>Select user: ' +
+            '<p data-tie="visible: !userArray.length">Add a user first</p>' +
+            '<p data-tie="visible: userArray.length">' +
+                'Select user: ' +
                 '<select>' +
                 '{{#userArray}}' +
                     '<option>{{name}}</option>' +
@@ -35,7 +40,7 @@
             '<ul>' +
                 '{{#userArray}}' +
                 '<li data-user-id="{{id}}">' +
-                    '<span data-laces="{ property: users[{{id}}].name, editable: true }"></span>' +
+                    '<span data-tie="text: users[{{id}}].name, editable: true"></span>' +
                     '<button class="remove-user">Remove</button>' +
                 '</li>' +
                 '{{/userArray}}' +
@@ -43,7 +48,22 @@
                     '<input id="name-input" type="text">' +
                     '<button id="add-user">Add</button>' +
                 '</li>' +
-            '</ul>'
+            '</ul>' +
+            '<hr>' +
+            '<p>' +
+                '<input type="checkbox" data-tie="checked: checked"> ' +
+                'The checkbox is <span data-tie="text: checkedLabel"></span>' +
+            '</p>' +
+            '<hr>' +
+            '<fieldset data-tie="radio: pet">' +
+                '<legend>What is Your Favorite Pet?</legend>' +
+                '<label><input type="radio" name="animal" value="cat"> Cats</label><br>' +
+                '<label><input type="radio" name="animal" value="dog"> Dogs</label><br>' +
+                '<label><input type="radio" name="animal" value="bird"> Birds</label><br>' +
+            '</fieldset>' +
+            '<p>' +
+                'Your favorite pet is a <span data-tie="text: pet"></span>' +
+            '</p>'
         );
 
         var tie = new LacesTie(model, template);

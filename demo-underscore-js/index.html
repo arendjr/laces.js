@@ -27,7 +27,7 @@
             '<ul>' +
                 '<% _.each(users, function(user) { %>' +
                 '<li data-user-id="<%= user.id %>">' +
-                    '<span data-laces="{ property: users[<%= user.id %>].name, editable: true }"></span>' +
+                    '<span data-tie="text: users[<%= user.id %>].name, editable: true"></span>' +
                     '<button class="remove-user">Remove</button>' +
                 '</li>' +
                 '<% }); %>' +
