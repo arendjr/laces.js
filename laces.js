@@ -609,6 +609,7 @@ LacesArray.prototype.reverse = function() {
 
     Array.prototype.reverse.call(this);
     this.fire("change", { "elements": [] });
+    return this;
 };
 
 // Set the element at the specified index to the given value. Use this method
