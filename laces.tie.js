@@ -77,6 +77,11 @@ function LacesTie(model, template, options) {
         return undefined;
     }
 
+    function updateAttribute(el, propertyRef, defaultValue, attr) {
+        var value = reference(propertyRef).value;
+        el.setAttribute(attr, value || defaultValue);
+    }
+
     function updateChecked(el, propertyRef) {
         el.checked = !!reference(propertyRef).value;
     }
@@ -122,6 +127,7 @@ function LacesTie(model, template, options) {
 
     function updateMethodForKey(key) {
         switch(key) {
+        case "attr": return updateAttribute;
         case "checked": return updateChecked;
         case "class": return updateClass;
         case "disabled": return updateDisabled;
@@ -132,14 +138,14 @@ function LacesTie(model, template, options) {
         }
     }
 
-    function tieProperty(key, propertyRef, defaultValue, el) {
+    function tieProperty(key, propertyRef, defaultValue, el, attr) {
         var updateMethod = updateMethodForKey(key);
         if (!updateMethod) {
             return;
         }
 
         var binding = function() {
-            updateMethod(el, propertyRef, defaultValue);
+            updateMethod(el, propertyRef, defaultValue, attr);
         };
         bindings.push(binding);
 
@@ -167,7 +173,7 @@ function LacesTie(model, template, options) {
             }
         }
 
-        updateMethod(el, propertyRef, defaultValue);
+        updateMethod(el, propertyRef, defaultValue, attr);
     }
 
     function makeEditable(node, propertyRef) {
@@ -221,10 +227,14 @@ function LacesTie(model, template, options) {
                 for (var key in ties) {
                     if (ties.hasOwnProperty(key)) {
                         var propertyRef = ties[key];
-                        tieProperty(key, propertyRef, defaultValue, node);
+                        if (key.slice(0, 5) === "attr[" && key.slice(-1) === "]") {
+                            tieProperty("attr", propertyRef, defaultValue, node, key.slice(5, -1));
+                        } else {
+                            tieProperty(key, propertyRef, defaultValue, node);
 
-                        if (key === "text" && ties.editable === "true") {
-                            makeEditable(node, propertyRef);
+                            if (key === "text" && ties.editable === "true") {
+                                makeEditable(node, propertyRef);
+                            }
                         }
                     }
                 }

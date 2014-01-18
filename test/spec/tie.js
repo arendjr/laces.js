@@ -15,6 +15,8 @@
             $checkbox,
             fieldset,
             $fieldset,
+            div,
+            $div,
             model,
             markup = '<input type="checkbox" data-tie="checked: checked">' +
                      '<fieldset data-tie="radio: pet">' +
@@ -23,7 +25,8 @@
                          '<input type="radio" name="animal" value="dog" />Dogs<br />' +
                          '<input type="radio" name="animal" value="bird" />Birds<br />' +
                          '<input type="submit" value="Submit now" />' +
-                     '</fieldset>';
+                     '</fieldset>' +
+                     '<div data-tie="attr[data-pet]: pet"></div>';
 
         beforeEach(function() {
             model = new LacesModel({ checked: true, pet: "dog" });
@@ -34,6 +37,9 @@
 
             fieldset = checkbox.nextSibling;
             $fieldset = $(fieldset);
+
+            div = fieldset.nextSibling;
+            $div = $(div);
         });
 
         it("initializes the elements correctly", function() {
@@ -42,6 +48,7 @@
             expect($fieldset.find("[value='cat']").prop("checked")).to.be(false);
             expect($fieldset.find("[value='dog']").prop("checked")).to.be(true);
             expect($fieldset.find("[value='bird']").prop("checked")).to.be(false);
+            expect($div.data("pet")).to.be("dog");
         });
 
         it("updates the checkbox on model change", function() {
@@ -64,16 +71,18 @@
             expect(model.checked).to.be(true);
         });
 
-        it("updates the radio buttons on model change", function() {
+        it("updates the radio buttons and data attribute on model change", function() {
             model.pet = "bird";
             expect($fieldset.find("[value='cat']").prop("checked")).to.be(false);
             expect($fieldset.find("[value='dog']").prop("checked")).to.be(false);
             expect($fieldset.find("[value='bird']").prop("checked")).to.be(true);
+            expect($div.attr("data-pet")).to.be("bird");
 
             model.pet = "cat";
             expect($fieldset.find("[value='cat']").prop("checked")).to.be(true);
             expect($fieldset.find("[value='dog']").prop("checked")).to.be(false);
             expect($fieldset.find("[value='bird']").prop("checked")).to.be(false);
+            expect($div.attr("data-pet")).to.be("cat");
         });
 
         it("updates the model on radio button selection", function() {

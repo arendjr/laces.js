@@ -419,6 +419,13 @@ commas. Here is an overview of all the supported keys:
         reference with a ! to reverse the evaluation.</td>
 </tr>
 <tr>
+    <td><b>attr[...]</b></td>
+    <td>property reference</td>
+    <td>The property's value is set as value of the attribute specified between
+        the brackets. E.g. use data-tie="attr[title]: title" to set the value of
+        the title attribute to the value of the title property.</td>
+</tr>
+<tr>
     <td><b>class</b></td>
     <td>property reference</td>
     <td>The property's value is interpreted as a CSS class which is added to the
@@ -434,9 +441,9 @@ commas. Here is an overview of all the supported keys:
 <tr>
     <td><b>default</b></td>
     <td>any value</td>
-    <td>Default value to use if the property referenced by the text, value or
-        radio key is not set. If not given, an empty string would be used (or
-        the number 0 for an input element with a number type).</td>
+    <td>Default value to use if the property referenced by the text, value,
+        radio or attr key is not set. If not given, an empty string would be
+        used (or the number 0 for an input element with a number type).</td>
 </tr>
 </table>
 
