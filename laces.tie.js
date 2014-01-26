@@ -89,8 +89,8 @@ function LacesTie(model, template, options) {
     function updateClass(el, propertyRef) {
         var originalAttr = "data-tie-class";
         var originalClass = el.getAttribute(originalAttr);
-        if (!originalClass) {
-            originalClass = el.getAttribute("class");
+        if (originalClass === null) {
+            originalClass = el.getAttribute("class") || "";
             el.setAttribute(originalAttr, originalClass);
         }
         var classes = originalClass + " " + reference(propertyRef).value;
