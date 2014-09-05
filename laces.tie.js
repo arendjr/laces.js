@@ -273,14 +273,22 @@ Laces.Tie = LacesTie;
 
 }
 
-if (typeof define === "function" && define.amd) {
+var Laces;
+if (typeof exports === "object" && exports &&
+    typeof module === "object" && module && module.exports === exports) {
+    // Node.js (Browserify)
+    Laces = require("laces");
+    init(Laces);
+    module.exports = Laces;
+} else if (typeof define === "function" && define.amd) {
+    // AMD (Require.js)
     define(function(require) {
-        var Laces = require("laces");
+        Laces = require("laces");
         init(Laces);
         return Laces;
     });
 } else {
-    var Laces = { Model: window.LacesModel, Map: window.LacesMap, Array: window.LacesArray };
+    Laces = { Model: window.LacesModel, Map: window.LacesMap, Array: window.LacesArray };
     init(Laces);
     window.LacesTie = Laces.Tie;
 }
