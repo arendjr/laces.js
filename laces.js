@@ -102,15 +102,7 @@ LacesObject.prototype.fire = function(eventName, event) {
                 }
             }
             if (eventName === "change" && event.key && this instanceof LacesModel) {
-                eventName = "change:" + event.key;
-                event.name = eventName;
-                if (this._eventListeners.hasOwnProperty(eventName)) {
-                    listeners = this._eventListeners[eventName];
-                    for (i = 0, length = listeners.length; i < length; i++) {
-                        listener = listeners[i];
-                        listener.call(listener.context || this, event);
-                    }
-                }
+                this.fire("change:" + event.key, event);
             }
         }
     }
@@ -222,10 +214,10 @@ LacesObject.prototype._bindValue = function(key, value) {
 
     if (value && value._gotLaces) {
         var self = this, recursionGuard = false;
-        var binding = function() {
+        var binding = function(event) {
             if (!recursionGuard) {
                 recursionGuard = true;
-                self.fire("change", { "key": key, "value": value });
+                self.fire("change", { "key": key, "value": value, "event": event });
                 recursionGuard = false;
             }
         };
