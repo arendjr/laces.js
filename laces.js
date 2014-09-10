@@ -26,7 +26,9 @@ function LacesObject(options) {
 // options - Optional options object. If you set the "initialFire" property to
 //           true, the listener will be invoked immediately. Beware that unless
 //           eventName specifies a specific property, the event object will be
-//           completely empty the first time.
+//           completely empty the first time. If you set the "context" property,
+//           the this variable of the listener will be set to this context
+//           instead of to the model to which the listener is bound.
 LacesObject.prototype.on = LacesObject.prototype.bind = function(eventName, listener, options) {
 
     options = options || {};
@@ -34,7 +36,7 @@ LacesObject.prototype.on = LacesObject.prototype.bind = function(eventName, list
     if (eventName.indexOf(" ") > -1) {
         var eventNames = eventName.split(" ");
         for (var i = 0, length = eventNames.length; i < length; i++) {
-            this.bind(eventNames[i], listener);
+            this.on(eventNames[i], listener, { context: options.context });
         }
         if (options.initialFire) {
             this.fire(eventNames[0], {});
@@ -44,6 +46,9 @@ LacesObject.prototype.on = LacesObject.prototype.bind = function(eventName, list
             this._eventListeners[eventName] = [];
         }
         this._eventListeners[eventName].push(listener);
+        if (options.context) {
+            listener.context = options.context;
+        }
 
         if (options.initialFire) {
             var event = {};
@@ -66,7 +71,7 @@ LacesObject.prototype.on = LacesObject.prototype.bind = function(eventName, list
 //         set to match the event name.
 LacesObject.prototype.fire = function(eventName, event) {
 
-    var i = 0, length;
+    var i = 0, length, listener;
     if (eventName.indexOf(" ") > -1) {
         var eventNames = eventName.split(" ");
         for (length = eventNames.length; i < length; i++) {
@@ -80,7 +85,7 @@ LacesObject.prototype.fire = function(eventName, event) {
         event = event || {};
         event.name = eventName;
 
-        if (this._heldEvents instanceof Array) {
+        if (this._heldEvents) {
             for (length = this._heldEvents.length; i < length; i++) {
                 if (this._heldEvents[i].name === eventName) {
                     return;
@@ -92,7 +97,8 @@ LacesObject.prototype.fire = function(eventName, event) {
             if (this._eventListeners.hasOwnProperty(eventName)) {
                 listeners = this._eventListeners[eventName];
                 for (length = listeners.length; i < length; i++) {
-                    listeners[i].call(this, event);
+                    listener = listeners[i];
+                    listener.call(listener.context || this, event);
                 }
             }
             if (eventName === "change" && event.key && this instanceof LacesModel) {
@@ -101,7 +107,8 @@ LacesObject.prototype.fire = function(eventName, event) {
                 if (this._eventListeners.hasOwnProperty(eventName)) {
                     listeners = this._eventListeners[eventName];
                     for (i = 0, length = listeners.length; i < length; i++) {
-                        listeners[i].call(this, event);
+                        listener = listeners[i];
+                        listener.call(listener.context || this, event);
                     }
                 }
             }
@@ -134,7 +141,7 @@ LacesObject.prototype.holdEvents = function() {
 // after when you're making changes after a call to holdEvents().
 LacesObject.prototype.fireHeldEvents = function() {
 
-    if (this._heldEvents === null) {
+    if (!this._heldEvents) {
         this.log("Need a call to holdEvents() before calling fireHeldEvents()");
         return;
     }
@@ -168,7 +175,7 @@ LacesObject.prototype.off = LacesObject.prototype.unbind = function(eventName, l
         var removed = false;
         for (eventName in this._eventListeners) {
             if (this._eventListeners.hasOwnProperty(eventName)) {
-                if (this.unbind(eventName, listener)) {
+                if (this.off(eventName, listener)) {
                     removed = true;
                 }
             }
@@ -222,7 +229,7 @@ LacesObject.prototype._bindValue = function(key, value) {
                 recursionGuard = false;
             }
         };
-        value.bind("change", binding);
+        value.on("change", binding);
         this._bindings.push(binding);
     }
 };
@@ -231,7 +238,7 @@ LacesObject.prototype._unbindValue = function(value) {
 
     if (value && value._gotLaces) {
         for (var i = 0, length = this._bindings.length; i < length; i++) {
-            if (value.unbind("change", this._bindings[i])) {
+            if (value.off("change", this._bindings[i])) {
                 this._bindings.splice(i, 1);
                 break;
             }
@@ -486,7 +493,7 @@ LacesModel.prototype.set = function(key, value, options) {
         var self = this;
         for (var i = 0, length = dependencies.length; i < length; i++) {
             var dependency = dependencies[i];
-            this.bind("change:" + dependency, reevaluate);
+            this.on("change:" + dependency, reevaluate);
         }
 
         value = value.call(this);
@@ -691,18 +698,18 @@ LacesArray.prototype.splice = function(index, howMany) {
 // length of the array.
 LacesArray.prototype.unshift = function() {
 
-    var args = [];
+    var elements = [];
     for (var i = 0, length = arguments.length; i < length; i++) {
         var value = this.wrap(arguments[i]);
         if (this._options.bindChildren !== false) {
             this._bindValue(i, value);
         }
-        args.push(value);
+        elements.push(value);
     }
 
-    Array.prototype.unshift.apply(this, arguments);
+    Array.prototype.unshift.apply(this, elements);
 
-    this.fire("add change", { "elements": arguments, "index": 0 });
+    this.fire("add change", { "elements": elements, "index": 0 });
 
     return this.length;
 };
