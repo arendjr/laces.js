@@ -191,7 +191,7 @@ LacesObject.prototype.off = LacesObject.prototype.unbind = function(eventName, l
 LacesObject.prototype.wrap = function(value) {
 
     var wrapped;
-    if (value && value._gotLaces) {
+    if (value && (value._gotLaces || value instanceof Date)) {
         wrapped = value;
     } else if (value instanceof Array) {
         wrapped = new LacesArray(this._options);
