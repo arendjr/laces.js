@@ -93,9 +93,8 @@ LacesObject.prototype.fire = function(eventName, event) {
             }
             this._heldEvents.push(event);
         } else {
-            var listeners;
             if (this._eventListeners.hasOwnProperty(eventName)) {
-                listeners = this._eventListeners[eventName];
+                var listeners = this._eventListeners[eventName].slice();
                 for (length = listeners.length; i < length; i++) {
                     listener = listeners[i];
                     listener.call(listener.context || this, event);
