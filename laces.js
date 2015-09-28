@@ -676,7 +676,7 @@ LacesArray.prototype.splice = function(index, howMany) {
     if (addedElements.length > 0) {
         if (this._options.bindChildren !== false) {
             for (i = 0, length = addedElements.length; i < length; i++) {
-                this._bindValue(index + i, addedElements[j]);
+                this._bindValue(index + i, addedElements[i]);
             }
         }
         this.fire("add change", { "elements": addedElements, "index": index });
