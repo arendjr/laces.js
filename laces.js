@@ -158,7 +158,8 @@ LacesObject.prototype.discardHeldEvents = function() {
 // Unbind a previously bound listener callback.
 //
 // eventName - Name of the event to which the listener was bound. If omitted,
-//             the listener will be unbound from all event types.
+//             the listener will be unbound from all event types. Multiple event names may be
+//             given separated by spaces.
 // listener - Callback function to unbind.
 LacesObject.prototype.off = LacesObject.prototype.unbind = function(eventName, listener) {
 
@@ -174,16 +175,23 @@ LacesObject.prototype.off = LacesObject.prototype.unbind = function(eventName, l
         return removed;
     }
 
-    if (!this._eventListeners.hasOwnProperty(eventName)) {
-        return false;
-    }
-
-    var index = this._eventListeners[eventName].indexOf(listener);
-    if (index > -1) {
-        this._eventListeners[eventName].splice(index, 1);
-        return true;
+    if (eventName.indexOf(" ") > -1) {
+        var eventNames = eventName.split(" ");
+        for (var i = 0, length = eventNames.length; i < length; i++) {
+            this.off(eventNames[i], listener);
+        }
     } else {
-        return false;
+        if (!this._eventListeners.hasOwnProperty(eventName)) {
+            return false;
+        }
+
+        var index = this._eventListeners[eventName].indexOf(listener);
+        if (index > -1) {
+            this._eventListeners[eventName].splice(index, 1);
+            return true;
+        } else {
+            return false;
+        }
     }
 };
 
@@ -522,7 +530,7 @@ function LacesArray(array, options) {
     } else {
         options = array;
         array = [];
-    } 
+    }
     for (var method in LacesArray.prototype) {
         Object.defineProperty(array, method, {
             "value": LacesArray.prototype[method],
