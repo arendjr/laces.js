@@ -647,9 +647,9 @@ LacesArray.prototype.shift = function() {
 };
 
 // Sort the elements of the array in place and return the array.
-LacesArray.prototype.sort = function() {
+LacesArray.prototype.sort = function(comparator) {
 
-    Array.prototype.sort.call(this);
+    Array.prototype.sort.call(this, comparator);
     this.fire("change", { "elements": [], "index": 0 });
 
     return this;
