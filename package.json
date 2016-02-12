@@ -1,6 +1,6 @@
 {
   "name": "laces.js",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Provides the M in MVC, while you tie the rest.",
   "homepage": "https://github.com/arendjr/laces.js",
   "license": "MIT",
