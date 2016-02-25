@@ -86,12 +86,12 @@ LacesObject.prototype.fire = function(eventName, event) {
         event.name = eventName;
 
         if (this._heldEvents) {
-            for (length = this._heldEvents.length; i < length; i++) {
-                if (this._heldEvents[i].name === eventName) {
-                    return;
-                }
+            var alreadyHeld = this._heldEvents.some(function(heldEvent) {
+                return heldEvent.name === eventName;
+            });
+            if (!alreadyHeld) {
+                this._heldEvents.push(eventName === "change" ? { name: eventName } : event);
             }
-            this._heldEvents.push(event);
         } else {
             if (this._eventListeners.hasOwnProperty(eventName)) {
                 var listeners = this._eventListeners[eventName].slice();
@@ -100,9 +100,10 @@ LacesObject.prototype.fire = function(eventName, event) {
                     listener.call(listener.context || this, event);
                 }
             }
-            if (eventName === "change" && event.key && this instanceof LacesModel) {
-                this.fire("change:" + event.key, event);
-            }
+        }
+
+        if (eventName === "change" && event.key && this instanceof LacesModel) {
+            this.fire("change:" + event.key, event);
         }
     }
 };
@@ -291,6 +292,42 @@ LacesMap.prototype.get = function(key) {
     return this._values[key];
 };
 
+// Returns whether this Laces Map is equal to another object. A deep
+// comparison is performed between the two objects.
+//
+// other - The object to compare to. May be another Laces Map or a plain
+//         JavaScript object.
+LacesMap.prototype.isEqual = function(other) {
+
+    if (!other) {
+        return false;
+    }
+
+    var otherKeys = (other._gotLaces ? other.keys() : Object.keys(other));
+    if (otherKeys.length !== Object.keys(this._values).length) {
+        return false;
+    }
+
+    for (var key in this._values) {
+        if (this._values.hasOwnProperty(key)) {
+            var value = this._values[key];
+            if (value && value.isEqual) {
+                if (!value.isEqual(other[key])) {
+                    return false;
+                }
+            } else {
+                if (other[key] !== value) {
+                    return false;
+                }
+            }
+            if (value === undefined && otherKeys.indexOf(key) === -1) {
+                return false;
+            }
+        }
+    }
+    return true;
+};
+
 // Return the keys of all set properties.
 LacesMap.prototype.keys = function() {
 
@@ -365,12 +402,16 @@ LacesMap.prototype.set = function(key, value, options) {
         };
     }
 
-    Object.defineProperty(this, key, {
-        "get": getter,
-        "set": setter,
-        "configurable": true,
-        "enumerable": true
-    });
+    if (key in this) {
+        // the property already exists (possibly as a non-Laces property)
+    } else {
+        Object.defineProperty(this, key, {
+            "get": getter,
+            "set": setter,
+            "configurable": true,
+            "enumerable": true
+        });
+    }
 
     setter.call(this, value);
 };
@@ -384,8 +425,8 @@ LacesMap.prototype._setValue = function(key, value) {
         "value": value
     };
 
-    var newProperty = false;
-    if (this._values.hasOwnProperty(key)) {
+    var existingProperty = this._values.hasOwnProperty(key);
+    if (existingProperty) {
         var oldValue = this._values[key];
         if (oldValue === value) {
             return;
@@ -396,8 +437,6 @@ LacesMap.prototype._setValue = function(key, value) {
         }
 
         event.oldValue = oldValue;
-    } else {
-        newProperty = true;
     }
 
     this._values[key] = value;
@@ -406,11 +445,7 @@ LacesMap.prototype._setValue = function(key, value) {
         this._bindValue(key, value);
     }
 
-    if (newProperty) {
-        this.fire("add change", event);
-    } else {
-        this.fire("update change", event);
-    }
+    this.fire(existingProperty ? "update change" : "add change", event);
 };
 
 
@@ -469,10 +504,6 @@ LacesModel.prototype.set = function(key, value, options) {
 
     options = options || {};
 
-    function reevaluate() {
-        self._reevaluate(key);
-    }
-
     if (typeof value === "function") {
         var dependencies = (options.dependencies ? options.dependencies.slice(0) : []);
 
@@ -489,10 +520,9 @@ LacesModel.prototype.set = function(key, value, options) {
             }
         }
 
-        var self = this;
         for (var i = 0, length = dependencies.length; i < length; i++) {
             var dependency = dependencies[i];
-            this.on("change:" + dependency, reevaluate);
+            this.on("change:" + dependency, this._reevaluate.bind(this, key));
         }
 
         value = value.call(this);
@@ -560,6 +590,32 @@ LacesArray.prototype.constructor = LacesArray;
 LacesArray.prototype.get = function(index) {
 
     return this[index];
+};
+
+// Returns whether this Laces Array is equal to another array. A deep
+// comparison is performed between the two objects.
+//
+// other - The array to compare to. May be another Laces Array or a plain
+//         JavaScript Array.
+LacesArray.prototype.isEqual = function(other) {
+
+    if (!other || this.length !== other.length) {
+        return false;
+    }
+
+    for (var i = 0, length = this.length; i < length; i++) {
+        var value = this[i];
+        if (value && value.isEqual) {
+            if (!value.isEqual(other[i])) {
+                return false;
+            }
+        } else {
+            if (other[i] !== value) {
+                return false;
+            }
+        }
+    }
+    return true;
 };
 
 // Remove the last element from the array and return that element.
@@ -665,7 +721,7 @@ LacesArray.prototype.sort = function(comparator) {
 
 // Change the content of the array, adding new elements while removing old
 // elements.
-LacesArray.prototype.splice = function(index, howMany) {
+LacesArray.prototype.splice = function(index) {
 
     var removedElements = Array.prototype.splice.apply(this, arguments);
     var addedElements = [];
