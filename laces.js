@@ -12,6 +12,7 @@ function LacesObject(options) {
     Object.defineProperty(this, "_bindings", { "value": [], "writable": true });
     Object.defineProperty(this, "_eventListeners", { "value": {}, "writable": true });
     Object.defineProperty(this, "_heldEvents", { "value": null, "writable": true });
+    Object.defineProperty(this, "_gotLaces", { "value": true });
     Object.defineProperty(this, "_options", { "value": options || {} });
 }
 
@@ -215,8 +216,6 @@ LacesObject.prototype.wrap = function(value) {
     }
     return wrapped;
 };
-
-LacesObject.prototype._gotLaces = true;
 
 LacesObject.prototype._bindValue = function(key, value) {
 
